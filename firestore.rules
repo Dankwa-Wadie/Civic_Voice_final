@@ -83,7 +83,11 @@ service cloud.firestore {
       // Anyone authenticated can write (create) a forum post of their own
       allow create: if isAuthenticated()
         && request.resource.data.authorId == request.auth.uid
-        && (request.resource.data.authorEmail == request.auth.token.email || request.resource.data.authorEmail == 'anonymous')
+        && (
+          request.resource.data.authorEmail == request.auth.token.email ||
+          request.resource.data.authorEmail == 'anonymous' ||
+          request.resource.data.authorEmail == 'anonymous-admin'
+        )
         && request.resource.data.content is string
         && request.resource.data.content.size() >= 1
         && request.resource.data.content.size() <= 1000
