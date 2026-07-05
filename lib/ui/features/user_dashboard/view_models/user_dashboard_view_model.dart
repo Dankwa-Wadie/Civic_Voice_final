@@ -103,7 +103,7 @@ class UserDashboardViewModel extends ChangeNotifier {
     final String authorEmail;
     if (_isAnonymousChat) {
       authorName = getAnonymousName(_auth.currentUser?.uid ?? 'anon-uid', isAdmin: isAdmin);
-      authorEmail = isAdmin ? 'anonymous-admin' : 'anonymous';
+      authorEmail = 'anonymous';
     } else {
       authorName = currentUserName;
       authorEmail = currentUserEmail;
