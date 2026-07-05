@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1019872630585",
+    "project_id": "civicvoice-4e96f",
+    "storage_bucket": "civicvoice-4e96f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019872630585:android:e35b9a0694e80e2ef5bae8",
+        "android_client_info": {
+          "package_name": "com.civicvoice.civic_voice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1019872630585-digg34dv0cks5ojlim3ijiuaea15b4lt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.civicvoice.civic_voice",
+            "certificate_hash": "4add53ae1403e9f84a07c7955acce58b790071d8"
+          }
+        },
+        {
+          "client_id": "1019872630585-vi6si16onr97f96tgaa8krm29l07rkd8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-jifhinm7t9439ZxiIzEXjG9o6dKFY1Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1019872630585-vi6si16onr97f96tgaa8krm29l07rkd8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1019872630585-k6uhtrjvc2k4f6tngd1oe9mbmkq9cb3b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.civicvoice.civicVoice"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

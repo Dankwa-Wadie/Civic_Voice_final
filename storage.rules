@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ──────────────────────────────────────────────────────────────────────────
+    // Helper Functions
+    // ──────────────────────────────────────────────────────────────────────────
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Checks if the user's email belongs to the admin domain/keyword matrix
+    function hasAdminEmail() {
+      return isAuthenticated() && 
+        (
+          request.auth.token.email == 'admin@civicvoice.gov' ||
+          request.auth.token.email == 'admin@civicvoice.org' ||
+          request.auth.token.email.matches('.*admin.*') ||
+          request.auth.token.email.matches('.*\\.gov$')
+        );
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Rules
+    // ──────────────────────────────────────────────────────────────────────────
+
+    match /incident_media/{imageId} {
+      // Anyone authenticated can view incident images
+      allow read: if isAuthenticated();
+
+      // Anyone authenticated can upload images of type image/* up to 5MB
+      allow create: if isAuthenticated() 
+        && request.resource.contentType.matches('image/.*')
+        && request.resource.size < 5 * 1024 * 1024; // 5MB limit
+
+      // Only admins can update or delete incident images
+      allow update, delete: if hasAdminEmail();
+    }
+  }
+}

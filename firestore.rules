@@ -1,0 +1,96 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Helper Functions
+    // ──────────────────────────────────────────────────────────────────────────
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Checks if the user's email belongs to the admin domain/keyword matrix
+    function hasAdminEmail() {
+      return isAuthenticated() && 
+        (
+          request.auth.token.email == 'admin@civicvoice.gov' ||
+          request.auth.token.email == 'admin@civicvoice.org' ||
+          request.auth.token.email.matches('.*admin.*') ||
+          request.auth.token.email.matches('.*\\.gov$')
+        );
+    }
+
+    // Checks if the user has an admin role document or an admin email
+    function isAdmin() {
+      return hasAdminEmail() || 
+        (
+          isAuthenticated() && 
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        );
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Rules
+    // ──────────────────────────────────────────────────────────────────────────
+
+    // Users Collection
+    match /users/{userId} {
+      // Users can read their own documents, admins can read all
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Allow user creation or update if they own the doc.
+      // Elevating 'role' to 'admin' requires the user to satisfy hasAdminEmail().
+      allow write: if isOwner(userId) && (
+        (!('role' in request.resource.data) || request.resource.data.role is string) &&
+        (!('role' in request.resource.data) || request.resource.data.role != 'admin' || hasAdminEmail())
+      ) || isAdmin();
+    }
+
+    // Civic Reports Collection
+    match /civic_reports/{reportId} {
+      // Anyone authenticated can read reports
+      allow read: if isAuthenticated();
+
+      // Anyone authenticated can submit (create) a report with strict validations
+      allow create: if isAuthenticated()
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 5
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.description is string
+        && request.resource.data.description.size() >= 10
+        && request.resource.data.description.size() <= 1000
+        && (request.resource.data.latitude is float || request.resource.data.latitude is int)
+        && (request.resource.data.longitude is float || request.resource.data.longitude is int)
+        && request.resource.data.status == 'submitted'
+        && (request.resource.data.timestamp is timestamp || request.resource.data.timestamp is int);
+
+      // Only administrators can update or delete reports (e.g. status updates)
+      allow update, delete: if isAdmin();
+    }
+
+    // Forum Posts Collection
+    match /forum_posts/{postId} {
+      // Anyone authenticated can read forum posts
+      allow read: if isAuthenticated();
+
+      // Anyone authenticated can write (create) a forum post of their own
+      allow create: if isAuthenticated()
+        && request.resource.data.authorId == request.auth.uid
+        && (request.resource.data.authorEmail == request.auth.token.email || request.resource.data.authorEmail == 'anonymous')
+        && request.resource.data.content is string
+        && request.resource.data.content.size() >= 1
+        && request.resource.data.content.size() <= 1000
+        && (request.resource.data.timestamp is timestamp || request.resource.data.timestamp is int);
+
+      // Only administrators can update or delete forum posts
+      allow update, delete: if isAdmin();
+    }
+  }
+}

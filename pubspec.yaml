@@ -1,0 +1,67 @@
+name: civic_voice
+description: CivicVoice — Civic incident reporting platform for Accra, Ghana.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.10.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider: ^6.1.2
+
+  # Value equality for domain models
+  equatable: ^2.0.5
+
+  # Maps (Free Alternative)
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+
+  # Data table
+  data_table_2: ^2.5.12
+
+  # Internationalization & date formatting
+  intl: ^0.19.0
+
+  # UUID generation
+  uuid: ^4.5.1
+
+  # Image picker for citizen reports
+  image_picker: ^1.1.2
+
+  # Google Fonts
+  google_fonts: ^6.2.1
+
+  # Routing
+  go_router: ^14.6.3
+
+  cupertino_icons: ^1.0.8
+
+  # Location Services
+  geolocator: ^11.0.0
+
+  # Firebase
+  firebase_core: ^3.1.1
+  firebase_auth: ^5.1.2
+  cloud_firestore: ^5.0.2
+  firebase_storage: ^12.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  image_path: "assets/images/app_icon.png"
+  web:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+
+flutter:
+  uses-material-design: true
