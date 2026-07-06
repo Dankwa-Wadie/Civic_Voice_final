@@ -3,5 +3,4 @@ services:
     name: civic-voice-web
     runtime: static
     buildCommand: "echo 'Deploying pre-built static web assets'"
-    publishDir: ./build/web
     staticPublishPath: ./build/web
