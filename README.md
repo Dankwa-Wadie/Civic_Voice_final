@@ -4,7 +4,7 @@ CivicVoice is a modern, responsive civic incident reporting platform built for A
 
 ---
 
-## 📸 Application Preview
+## Application Preview
 
 ### Citizen App Views
 | Citizen Dashboard | Report Submission Flow | Profile & Settings | Community Forum |
