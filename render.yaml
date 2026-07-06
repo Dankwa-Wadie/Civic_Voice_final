@@ -3,4 +3,4 @@ services:
     name: civic-voice-web
     runtime: static
     buildCommand: ""
-    publishDir: build/web
+    publishDir: web
