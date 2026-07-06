@@ -469,28 +469,7 @@ class _LoginCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: AppTheme.sm),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.info_outline_rounded,
-                    size: 13,
-                    color: AppTheme.onSurfaceDim,
-                  ),
-                  const SizedBox(width: 4),
-                  Flexible(
-                    child: Text(
-                      Firebase.apps.isNotEmpty
-                          ? (vm.isSignUp
-                                ? 'Phase 2: Live registration via Firebase Auth.'
-                                : 'Phase 2: Secure authentication via Firebase Auth.')
-                          : 'Offline Fallback: Mock credentials enabled.',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                ],
-              ),
+
             ],
           ),
         ),
