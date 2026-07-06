@@ -3,8 +3,4 @@ services:
     name: civic-voice-web
     runtime: static
     buildCommand: ""
-    publishPath: build/web
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-cache
+    publishDir: build/web
