@@ -6,11 +6,16 @@ CivicVoice is a modern, responsive civic incident reporting platform built for A
 
 ## 📸 Application Preview
 
-Below are preview screenshots demonstrating the application's responsive UI/UX, incident submission screens, community forums, and admin views:
+### Citizen App Views
+| Citizen Dashboard & Submission | Community Forum (Dark Mode) |
+| :---: | :---: |
+| ![Citizen Dashboard](assets/images/screenshot_1.png) | ![Community Forum](assets/images/screenshot_forum.png) |
 
-| Citizen Dashboard & Submission | Community Forum (Dark Mode) | Admin Map & Metrics View |
+### Admin Panel Views
+| Admin Overview & Stats | Live Reports Management | Admin Map View (OSM) |
 | :---: | :---: | :---: |
-| ![Citizen Submission](assets/images/screenshot_1.png) | ![Community Forum](assets/images/screenshot_2.png) | ![Admin Dashboard](assets/images/screenshot_3.png) |
+| ![Admin Overview](assets/images/screenshot_admin_overview.png) | ![Admin Reports](assets/images/screenshot_admin_reports.png) | ![Admin Map](assets/images/screenshot_admin_map.png) |
+
 
 ---
 
