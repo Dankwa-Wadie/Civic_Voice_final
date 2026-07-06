@@ -64,4 +64,6 @@ flutter_launcher_icons:
     image_path: "assets/images/app_icon.png"
 
 flutter:
+  assets:
+    - shorebird.yaml
   uses-material-design: true
