@@ -1,4 +1,4 @@
-# CivicVoice 🇬🇭
+# CivicVoice 
 
 CivicVoice is a modern, responsive civic incident reporting platform built for Accra, Ghana. It empowers citizens to submit, track, and discuss public utility, infrastructure, and environmental issues, while providing municipal administrators with a powerful dashboard to prioritize, map, and resolve reports.
 
@@ -19,7 +19,7 @@ CivicVoice is a modern, responsive civic incident reporting platform built for A
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 * **Citizen Incident Reporting:**
   * **Categorized Submissions:** Submit issues under categories like Road Hazards, Waste Management, Water Supply, Power Outage, and Public Safety.
@@ -50,7 +50,7 @@ CivicVoice is a modern, responsive civic incident reporting platform built for A
 
 ---
 
-## 🛠 Setup & Installation
+## Setup & Installation
 
 ### Prerequisites
 * Flutter SDK (Targeting `>=3.10.4 <4.0.0`)
@@ -81,7 +81,7 @@ flutter build web
 
 ---
 
-## 🧪 Testing
+## Testing
 
 To run the full suite of unit and widget tests:
 ```bash
