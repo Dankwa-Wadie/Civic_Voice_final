@@ -13,6 +13,8 @@ import 'package:civic_voice/ui/core/theme/theme_provider.dart';
 import 'package:civic_voice/ui/features/reporting/views/report_form_screen.dart';
 import 'package:civic_voice/ui/features/auth/views/login_screen.dart';
 import '../view_models/user_dashboard_view_model.dart';
+import 'package:shorebird_code_push/shorebird_code_push.dart';
+import 'tabs/user_map_tab.dart';
 
 class UserDashboardScreen extends StatefulWidget {
   const UserDashboardScreen({super.key});
@@ -32,7 +34,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       if (mounted) {
         setState(() {});
@@ -106,6 +108,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           tabs: const [
             Tab(icon: Icon(Icons.assignment_rounded, size: 18), text: 'My Reports'),
+            Tab(icon: Icon(Icons.map_rounded, size: 18), text: 'Incident Map'),
             Tab(icon: Icon(Icons.forum_rounded, size: 18), text: 'Community Forum'),
           ],
         ),
@@ -114,6 +117,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
         controller: _tabController,
         children: [
           _MyReportsTab(vm: vm),
+          const UserMapTab(),
           ForumTab(
             vm: vm,
             messageController: _messageController,
@@ -126,7 +130,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
           ),
         ],
       ),
-      floatingActionButton: _tabController.index == 0
+      floatingActionButton: _tabController.index != 2
           ? FloatingActionButton.extended(
               onPressed: () {
                 Navigator.of(context).pushNamed(ReportFormScreen.routeName);
@@ -934,17 +938,81 @@ class _ProfileSheet extends StatefulWidget {
 
 class _ProfileSheetState extends State<_ProfileSheet> {
   late final TextEditingController _nicknameController;
+  final ShorebirdCodePush _shorebird = ShorebirdCodePush();
+  bool _isShorebirdAvailable = false;
+  int? _currentPatch;
+  bool _isCheckingForUpdates = false;
+  bool _isUpdateAvailable = false;
+  String _updateStatusText = '';
+  bool _isDownloadingUpdate = false;
 
   @override
   void initState() {
     super.initState();
     _nicknameController = TextEditingController(text: widget.vm.nickname);
+    _isShorebirdAvailable = _shorebird.isShorebirdAvailable();
+    if (_isShorebirdAvailable) {
+      _updateStatusText = 'Updates enabled';
+      _shorebird.currentPatchNumber().then((patch) {
+        if (mounted) {
+          setState(() {
+            _currentPatch = patch;
+          });
+        }
+      });
+    } else {
+      _updateStatusText = 'Shorebird not available in this build';
+    }
   }
 
   @override
   void dispose() {
     _nicknameController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkForUpdates() async {
+    if (!_isShorebirdAvailable) return;
+    setState(() {
+      _isCheckingForUpdates = true;
+      _updateStatusText = 'Checking for updates...';
+    });
+    try {
+      final isUpdateAvailable = await _shorebird.isNewPatchAvailableForDownload();
+      setState(() {
+        _isCheckingForUpdates = false;
+        _isUpdateAvailable = isUpdateAvailable;
+        if (isUpdateAvailable) {
+          _updateStatusText = 'New live update available!';
+        } else {
+          _updateStatusText = 'Application is up-to-date (Patch ${_currentPatch ?? 0})';
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _isCheckingForUpdates = false;
+        _updateStatusText = 'Check failed: $e';
+      });
+    }
+  }
+
+  Future<void> _downloadAndInstallUpdate() async {
+    setState(() {
+      _isDownloadingUpdate = true;
+      _updateStatusText = 'Downloading live update...';
+    });
+    try {
+      await _shorebird.downloadUpdateIfAvailable();
+      setState(() {
+        _isDownloadingUpdate = false;
+        _updateStatusText = 'Update downloaded! Restart to apply changes.';
+      });
+    } catch (e) {
+      setState(() {
+        _isDownloadingUpdate = false;
+        _updateStatusText = 'Download failed: $e';
+      });
+    }
   }
 
   @override
@@ -1110,6 +1178,96 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: AppTheme.lg),
+          Text(
+            'APPLICATION UPDATES',
+            style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+          ),
+          const SizedBox(height: AppTheme.sm),
+          Container(
+            padding: const EdgeInsets.all(AppTheme.md),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceVariant,
+              borderRadius: AppTheme.radiusCard,
+              border: Border.all(color: theme.colorScheme.outline.withOpacity(0.3)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      _isShorebirdAvailable ? Icons.offline_bolt_rounded : Icons.offline_bolt_outlined,
+                      color: _isShorebirdAvailable ? Colors.amber[300] : theme.colorScheme.onSurfaceVariant,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppTheme.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _isShorebirdAvailable ? 'Live updates active' : 'Live updates inactive',
+                            style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _updateStatusText,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_currentPatch != null)
+                      Chip(
+                        label: Text('Patch $_currentPatch', style: const TextStyle(fontSize: 10)),
+                        padding: EdgeInsets.zero,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                  ],
+                ),
+                if (_isShorebirdAvailable) ...[
+                  const SizedBox(height: AppTheme.md),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (!_isUpdateAvailable)
+                        TextButton.icon(
+                          onPressed: _isCheckingForUpdates ? null : _checkForUpdates,
+                          icon: _isCheckingForUpdates
+                              ? const SizedBox(
+                                  width: 14,
+                                  height: 14,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : const Icon(Icons.refresh_rounded, size: 16),
+                          label: const Text('Check for Updates'),
+                        ),
+                      if (_isUpdateAvailable)
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primary,
+                            foregroundColor: AppTheme.onPrimary,
+                          ),
+                          onPressed: _isDownloadingUpdate ? null : _downloadAndInstallUpdate,
+                          icon: _isDownloadingUpdate
+                              ? const SizedBox(
+                                  width: 14,
+                                  height: 14,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppTheme.onPrimary,
+                                  ),
+                                )
+                              : const Icon(Icons.download_rounded, size: 16),
+                          label: const Text('Download & Apply Update'),
+                        ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
           ),
           const SizedBox(height: AppTheme.lg),
         ],

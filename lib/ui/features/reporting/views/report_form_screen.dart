@@ -2,6 +2,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:civic_voice/data/repositories/mock_civic_data_repository.dart';
 import '../view_models/report_submission_view_model.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../../domain/enums/incident_category.dart';
@@ -289,20 +292,60 @@ class _Step3Location extends StatefulWidget {
 }
 
 class _Step3LocationState extends State<_Step3Location> {
+  final MapController _mapController = MapController();
+  final TextEditingController _searchCtrl = TextEditingController();
+  List<String> _matchingDistricts = [];
+  late ReportSubmissionViewModel _vm;
+
+  // Accra center fallback
+  static const LatLng _accraCentre = LatLng(5.6037, -0.1870);
+
   @override
   void initState() {
     super.initState();
-    final vm = context.read<ReportSubmissionViewModel>();
-    if (!vm.isFetchingLocation) {
-      vm.fetchMockLocation();
+    _vm = context.read<ReportSubmissionViewModel>();
+    _vm.addListener(_onViewModelChanged);
+    if (!_vm.isFetchingLocation) {
+      _vm.fetchMockLocation();
     }
   }
 
   @override
+  void dispose() {
+    _vm.removeListener(_onViewModelChanged);
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onViewModelChanged() {
+    if (mounted) {
+      _mapController.move(
+        LatLng(_vm.latitude, _vm.longitude),
+        _mapController.camera.zoom,
+      );
+    }
+  }
+
+  Map<String, LatLng> _getDistrictCenters() {
+    final Map<String, List<LatLng>> grouped = {};
+    for (final report in MockCivicDataRepository.seedData) {
+      grouped.putIfAbsent(report.district, () => []).add(LatLng(report.latitude, report.longitude));
+    }
+    return grouped.map((district, points) {
+      final avgLat = points.map((p) => p.latitude).reduce((a, b) => a + b) / points.length;
+      final avgLng = points.map((p) => p.longitude).reduce((a, b) => a + b) / points.length;
+      return MapEntry(district, LatLng(avgLat, avgLng));
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final districtCenters = _getDistrictCenters();
+    final uniqueDistricts = MockCivicDataRepository.seedData.map((r) => r.district).toSet().toList();
+
     return Consumer<ReportSubmissionViewModel>(
       builder: (context, vm, _) {
-        return Padding(
+        return SingleChildScrollView(
           padding: const EdgeInsets.all(AppTheme.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -313,81 +356,154 @@ class _Step3LocationState extends State<_Step3Location> {
               ),
               const SizedBox(height: AppTheme.xs),
               Text(
-                'Confirm your GPS location and attach a photo (optional).',
+                'Confirm your GPS location, search a district, or tap the map to choose the exact incident location.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const SizedBox(height: AppTheme.xl),
-              // GPS card
+              const SizedBox(height: AppTheme.md),
+              
+              // ── Search/Type in District ─────────────────────────────────────
+              TextField(
+                controller: _searchCtrl,
+                style: const TextStyle(color: AppTheme.onSurface),
+                decoration: InputDecoration(
+                  hintText: 'Type district to search (e.g. Osu Klottey)',
+                  prefixIcon: const Icon(Icons.search_rounded, size: 18),
+                  suffixIcon: _searchCtrl.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear_rounded, size: 18),
+                          onPressed: () {
+                            setState(() {
+                              _searchCtrl.clear();
+                              _matchingDistricts = [];
+                            });
+                          },
+                        )
+                      : null,
+                ),
+                onChanged: (val) {
+                  if (val.trim().isEmpty) {
+                    setState(() => _matchingDistricts = []);
+                    return;
+                  }
+                  setState(() {
+                    _matchingDistricts = uniqueDistricts
+                        .where((d) => d.toLowerCase().contains(val.trim().toLowerCase()))
+                        .toList();
+                  });
+                },
+              ),
+              if (_matchingDistricts.isNotEmpty) ...[
+                const SizedBox(height: AppTheme.xs),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 150),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceVariant,
+                    borderRadius: AppTheme.radiusCard,
+                    border: Border.all(color: AppTheme.divider),
+                  ),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _matchingDistricts.length,
+                    itemBuilder: (context, index) {
+                      final dist = _matchingDistricts[index];
+                      return ListTile(
+                        dense: true,
+                        title: Text(dist, style: const TextStyle(fontWeight: FontWeight.w600)),
+                        onTap: () {
+                          final center = districtCenters[dist] ?? _accraCentre;
+                          vm.setLocation(center.latitude, center.longitude);
+                          setState(() {
+                            _searchCtrl.text = dist;
+                            _matchingDistricts = [];
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+              const SizedBox(height: AppTheme.md),
+
+              // ── Interactive Map ─────────────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(AppTheme.md),
+                height: 250,
                 decoration: BoxDecoration(
-                  color: AppTheme.surface,
                   borderRadius: AppTheme.radiusCard,
                   border: Border.all(color: AppTheme.divider),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(AppTheme.sm),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primary.withOpacity(0.12),
-                        borderRadius: AppTheme.radiusButton,
-                      ),
-                      child: vm.isFetchingLocation
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppTheme.primary,
-                              ),
-                            )
-                          : const Icon(
-                              Icons.location_on_rounded,
-                              color: AppTheme.primary,
-                              size: 20,
-                            ),
+                child: ClipRRect(
+                  borderRadius: AppTheme.radiusCard,
+                  child: FlutterMap(
+                    mapController: _mapController,
+                    options: MapOptions(
+                      initialCenter: LatLng(vm.latitude, vm.longitude),
+                      initialZoom: 14.0,
+                      onTap: (_, latLng) {
+                        vm.setLocation(latLng.latitude, latLng.longitude);
+                      },
                     ),
-                    const SizedBox(width: AppTheme.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            vm.isFetchingLocation
-                                ? 'Fetching GPS location…'
-                                : 'Location captured',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                              color: vm.isFetchingLocation
-                                  ? AppTheme.onSurfaceMuted
-                                  : AppTheme.success,
+                    children: [
+                      TileLayer(
+                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.civicvoice.civic_voice',
+                      ),
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: LatLng(vm.latitude, vm.longitude),
+                            width: 50,
+                            height: 50,
+                            child: const Icon(
+                              Icons.location_pin,
+                              color: Colors.red,
+                              size: 40,
                             ),
                           ),
-                          if (!vm.isFetchingLocation)
-                            Text(
-                              '${vm.latitude.toStringAsFixed(4)}° N, '
-                              '${vm.longitude.toStringAsFixed(4)}° '
-                              '${vm.longitude < 0 ? 'W' : 'E'}',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
                         ],
                       ),
-                    ),
-                    TextButton(
-                      onPressed: vm.fetchMockLocation,
-                      child: const Text('Refresh'),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: AppTheme.lg),
-              // Photo section
+              const SizedBox(height: AppTheme.sm),
+
+              // ── Coords & Use Current Location Row ───────────────────────────
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      vm.isFetchingLocation
+                          ? 'Fetching location…'
+                          : '${vm.latitude.toStringAsFixed(4)}° N, ${vm.longitude.toStringAsFixed(4)}° ${vm.longitude < 0 ? 'W' : 'E'}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppTheme.onSurfaceMuted,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: vm.isFetchingLocation ? null : vm.fetchLocation,
+                    icon: vm.isFetchingLocation
+                        ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppTheme.primary,
+                            ),
+                          )
+                        : const Icon(Icons.my_location_rounded, size: 14),
+                    label: const Text('Use Current Location', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
+              const Divider(height: AppTheme.xl),
+
+              // ── Attach Photo Section ────────────────────────────────────────
               Text(
-                'Attach Photo',
-                style: Theme.of(context).textTheme.titleLarge,
+                'Attach Photo (Optional)',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: AppTheme.sm),
               vm.imageFile != null
@@ -399,7 +515,8 @@ class _Step3LocationState extends State<_Step3Location> {
                       onCamera: kIsWeb ? null : vm.pickImageFromCamera,
                       onGallery: vm.pickImageFromGallery,
                     ),
-              const Spacer(),
+              const SizedBox(height: AppTheme.xl),
+              
               _NextButton(
                 enabled: !vm.isFetchingLocation,
                 label: 'Review & Submit',

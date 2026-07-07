@@ -123,6 +123,12 @@ class ReportSubmissionViewModel extends ChangeNotifier {
 
   Future<void> fetchMockLocation() => fetchLocation();
 
+  void setLocation(double lat, double lng) {
+    _latitude = lat;
+    _longitude = lng;
+    notifyListeners();
+  }
+
   Future<void> pickImageFromCamera() async {
     try {
       final file = await _imagePicker.pickImage(
