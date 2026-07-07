@@ -88,7 +88,9 @@ class ReportSubmissionViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      // Browsers manage location permission per-site rather than system-wide toggles.
+      // Therefore, we bypass the service check on web.
+      final bool serviceEnabled = kIsWeb ? true : await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         throw Exception('Location services are disabled.');
       }
@@ -105,9 +107,10 @@ class ReportSubmissionViewModel extends ChangeNotifier {
         throw Exception('Location permissions are permanently denied.');
       }
 
+      // Increase time limit on web to allow the user to read and accept the browser permission dialog.
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 5),
+        timeLimit: const Duration(seconds: 15),
       );
       _latitude = position.latitude;
       _longitude = position.longitude;
