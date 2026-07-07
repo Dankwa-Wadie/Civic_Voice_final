@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -48,6 +49,12 @@ class _UserMapTabState extends State<UserMapTab> {
           _permissionChecked = true;
         });
         _getUserLocation();
+      } else if (kIsWeb && permission == LocationPermission.denied) {
+        // On web, request permission directly on load if not yet granted/prompted
+        setState(() {
+          _permissionChecked = true;
+        });
+        await _requestLocationPermission();
       } else {
         setState(() {
           _permissionGranted = false;
@@ -97,12 +104,12 @@ class _UserMapTabState extends State<UserMapTab> {
 
   Future<void> _getUserLocation() async {
     try {
-      final isServiceEnabled = await Geolocator.isLocationServiceEnabled();
+      final isServiceEnabled = kIsWeb ? true : await Geolocator.isLocationServiceEnabled();
       if (!isServiceEnabled) return;
 
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.medium,
-        timeLimit: const Duration(seconds: 5),
+        timeLimit: Duration(seconds: kIsWeb ? 15 : 5),
       );
       setState(() {
         _userLocation = LatLng(position.latitude, position.longitude);
