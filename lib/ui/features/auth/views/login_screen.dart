@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../view_models/login_view_model.dart';
-import 'package:firebase_core/firebase_core.dart';
 import '../../admin_dashboard/views/dashboard_screen.dart';
 import '../../user_dashboard/views/user_dashboard_screen.dart';
 import '../../../core/theme/app_theme.dart';
@@ -146,7 +144,7 @@ class _BackgroundOrbs extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  AppTheme.primary.withOpacity(0.15),
+                  AppTheme.primary.withValues(alpha: 0.15),
                   Colors.transparent,
                 ],
               ),
@@ -163,7 +161,7 @@ class _BackgroundOrbs extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  AppTheme.success.withOpacity(0.10),
+                  AppTheme.success.withValues(alpha: 0.10),
                   Colors.transparent,
                 ],
               ),
@@ -192,7 +190,7 @@ class _LogoSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.primary.withOpacity(0.35),
+                color: AppTheme.primary.withValues(alpha: 0.35),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -251,7 +249,7 @@ class _LoginCard extends StatelessWidget {
         border: Border.all(color: AppTheme.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withValues(alpha: 0.25),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -329,9 +327,11 @@ class _LoginCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(AppTheme.sm + 2),
                   decoration: BoxDecoration(
-                    color: AppTheme.error.withOpacity(0.10),
+                    color: AppTheme.error.withValues(alpha: 0.10),
                     borderRadius: AppTheme.radiusButton,
-                    border: Border.all(color: AppTheme.error.withOpacity(0.3)),
+                    border: Border.all(
+                      color: AppTheme.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -385,7 +385,6 @@ class _LoginCard extends StatelessWidget {
                   ),
                 ),
               ),
-
             ],
           ),
         ),

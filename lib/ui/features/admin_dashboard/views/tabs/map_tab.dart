@@ -34,8 +34,8 @@ class _MapTabState extends State<MapTab> {
         final reports = _categoryFilter == null
             ? vm.allReports
             : vm.allReports
-                .where((r) => r.category == _categoryFilter)
-                .toList();
+                  .where((r) => r.category == _categoryFilter)
+                  .toList();
 
         final markers = _buildMarkers(reports);
 
@@ -54,9 +54,7 @@ class _MapTabState extends State<MapTab> {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.civicvoice.civic_voice',
                 ),
-                MarkerLayer(
-                  markers: markers,
-                ),
+                MarkerLayer(markers: markers),
               ],
             ),
             // ── Top overlay: category filter chips ──────────────────────
@@ -66,8 +64,7 @@ class _MapTabState extends State<MapTab> {
               right: AppTheme.md,
               child: _CategoryFilterChips(
                 selectedCategory: _categoryFilter,
-                onSelected: (cat) =>
-                    setState(() => _categoryFilter = cat),
+                onSelected: (cat) => setState(() => _categoryFilter = cat),
               ),
             ),
             // ── Bottom right: zoom controls ─────────────────────────────
@@ -107,8 +104,7 @@ class _MapTabState extends State<MapTab> {
                 child: _ReportBottomSheet(
                   report: _selectedReport!,
                   onClose: () => setState(() => _selectedReport = null),
-                  onStatusUpdate: (id, status) =>
-                      vm.updateStatus(id, status),
+                  onStatusUpdate: (id, status) => vm.updateStatus(id, status),
                 ),
               ),
           ],
@@ -139,7 +135,7 @@ class _MapTabState extends State<MapTab> {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                   border: Border.all(color: color, width: 2),
                 ),
@@ -191,8 +187,8 @@ class _CategoryFilterChips extends StatelessWidget {
               label: const Text('All'),
               selected: selectedCategory == null,
               onSelected: (_) => onSelected(null),
-              backgroundColor: AppTheme.surface.withOpacity(0.92),
-              selectedColor: AppTheme.primary.withOpacity(0.2),
+              backgroundColor: AppTheme.surface.withValues(alpha: 0.92),
+              selectedColor: AppTheme.primary.withValues(alpha: 0.2),
               checkmarkColor: AppTheme.primary,
               side: BorderSide(
                 color: selectedCategory == null
@@ -216,8 +212,8 @@ class _CategoryFilterChips extends StatelessWidget {
                 label: Text('${cat.emoji} ${cat.displayName}'),
                 selected: isSelected,
                 onSelected: (_) => onSelected(isSelected ? null : cat),
-                backgroundColor: AppTheme.surface.withOpacity(0.92),
-                selectedColor: AppTheme.primary.withOpacity(0.2),
+                backgroundColor: AppTheme.surface.withValues(alpha: 0.92),
+                selectedColor: AppTheme.primary.withValues(alpha: 0.2),
                 checkmarkColor: AppTheme.primary,
                 side: BorderSide(
                   color: isSelected ? AppTheme.primary : AppTheme.divider,
@@ -258,10 +254,7 @@ class _ZoomControls extends StatelessWidget {
         const SizedBox(height: AppTheme.xs),
         _MapControlButton(icon: Icons.remove_rounded, onTap: onZoomOut),
         const SizedBox(height: AppTheme.xs),
-        _MapControlButton(
-          icon: Icons.my_location_rounded,
-          onTap: onReset,
-        ),
+        _MapControlButton(icon: Icons.my_location_rounded, onTap: onReset),
       ],
     );
   }
@@ -302,7 +295,7 @@ class _MapLegend extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppTheme.sm + 2),
       decoration: BoxDecoration(
-        color: AppTheme.surface.withOpacity(0.92),
+        color: AppTheme.surface.withValues(alpha: 0.92),
         borderRadius: AppTheme.radiusCard,
         border: Border.all(color: AppTheme.divider),
       ),
@@ -312,10 +305,9 @@ class _MapLegend extends StatelessWidget {
         children: [
           Text(
             'Legend',
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: AppTheme.xs),
           ...IncidentCategory.values.map((cat) {
@@ -362,7 +354,7 @@ class _ReportBottomSheet extends StatelessWidget {
         border: const Border(top: BorderSide(color: AppTheme.divider)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -409,7 +401,9 @@ class _ReportBottomSheet extends StatelessWidget {
                               children: [
                                 Text(
                                   report.title,
-                                  style: Theme.of(context).textTheme.headlineMedium,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineMedium,
                                 ),
                                 const SizedBox(height: AppTheme.xs),
                                 Text(
@@ -449,7 +443,9 @@ class _ReportBottomSheet extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            report.reporterName.startsWith('anonymous:') ? 'Anonymous Citizen' : report.reporterName,
+                            report.reporterName.startsWith('anonymous:')
+                                ? 'Anonymous Citizen'
+                                : report.reporterName,
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           const SizedBox(width: AppTheme.md),
@@ -460,7 +456,9 @@ class _ReportBottomSheet extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            DateFormat('MMM d, y · HH:mm').format(report.timestamp),
+                            DateFormat(
+                              'MMM d, y · HH:mm',
+                            ).format(report.timestamp),
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
@@ -484,7 +482,9 @@ class _ReportBottomSheet extends StatelessWidget {
                                 onClose();
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: _statusColor(s).withOpacity(0.15),
+                                backgroundColor: _statusColor(
+                                  s,
+                                ).withValues(alpha: 0.15),
                                 foregroundColor: _statusColor(s),
                                 side: BorderSide(color: _statusColor(s)),
                                 elevation: 0,

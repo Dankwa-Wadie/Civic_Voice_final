@@ -21,7 +21,7 @@ class UserMapTab extends StatefulWidget {
 class _UserMapTabState extends State<UserMapTab> {
   final MapController _mapController = MapController();
   IncidentReport? _selectedReport;
-  
+
   bool _permissionChecked = false;
   bool _permissionGranted = false;
   bool _isFetchingLocation = false;
@@ -87,7 +87,11 @@ class _UserMapTabState extends State<UserMapTab> {
         });
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permission denied. Map centered on Accra.')),
+            const SnackBar(
+              content: Text(
+                'Location permission denied. Map centered on Accra.',
+              ),
+            ),
           );
         }
       }
@@ -104,7 +108,9 @@ class _UserMapTabState extends State<UserMapTab> {
 
   Future<void> _getUserLocation() async {
     try {
-      final isServiceEnabled = kIsWeb ? true : await Geolocator.isLocationServiceEnabled();
+      final isServiceEnabled = kIsWeb
+          ? true
+          : await Geolocator.isLocationServiceEnabled();
       if (!isServiceEnabled) return;
 
       final position = await Geolocator.getCurrentPosition(
@@ -124,7 +130,9 @@ class _UserMapTabState extends State<UserMapTab> {
   @override
   Widget build(BuildContext context) {
     if (!_permissionChecked) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primary));
+      return const Center(
+        child: CircularProgressIndicator(color: AppTheme.primary),
+      );
     }
 
     if (!_permissionGranted) {
@@ -135,7 +143,9 @@ class _UserMapTabState extends State<UserMapTab> {
       builder: (context, vm, _) {
         final reports = _categoryFilter == null
             ? vm.allReports
-            : vm.allReports.where((r) => r.category == _categoryFilter).toList();
+            : vm.allReports
+                  .where((r) => r.category == _categoryFilter)
+                  .toList();
 
         final markers = _buildMarkers(reports);
 
@@ -154,9 +164,7 @@ class _UserMapTabState extends State<UserMapTab> {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.civicvoice.civic_voice',
                 ),
-                MarkerLayer(
-                  markers: markers,
-                ),
+                MarkerLayer(markers: markers),
               ],
             ),
             // ── Top overlay: category filter chips ──────────────────────
@@ -188,8 +196,13 @@ class _UserMapTabState extends State<UserMapTab> {
                         _mapController.move(_userLocation!, 15.0);
                       } else {
                         if (mounted) {
+                          // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Unable to retrieve current location')),
+                            const SnackBar(
+                              content: Text(
+                                'Unable to retrieve current location',
+                              ),
+                            ),
                           );
                         }
                       }
@@ -211,7 +224,10 @@ class _UserMapTabState extends State<UserMapTab> {
                       );
                     },
                     onReset: () {
-                      _mapController.move(_userLocation ?? _accraCentre, _initialZoom);
+                      _mapController.move(
+                        _userLocation ?? _accraCentre,
+                        _initialZoom,
+                      );
                     },
                   ),
                 ],
@@ -252,7 +268,7 @@ class _UserMapTabState extends State<UserMapTab> {
               Container(
                 padding: const EdgeInsets.all(AppTheme.lg),
                 decoration: BoxDecoration(
-                  color: AppTheme.primary.withOpacity(0.1),
+                  color: AppTheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -265,21 +281,23 @@ class _UserMapTabState extends State<UserMapTab> {
               Text(
                 'Location Access Required',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppTheme.md),
               Text(
                 'Civic Voice needs your location permission to show active infrastructure reports around you and mark your position on the map.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.onSurfaceMuted,
-                    ),
+                  color: AppTheme.onSurfaceMuted,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppTheme.xl),
               ElevatedButton.icon(
-                onPressed: _isFetchingLocation ? null : _requestLocationPermission,
+                onPressed: _isFetchingLocation
+                    ? null
+                    : _requestLocationPermission,
                 icon: _isFetchingLocation
                     ? const SizedBox(
                         width: 18,
@@ -289,9 +307,14 @@ class _UserMapTabState extends State<UserMapTab> {
                           color: AppTheme.onPrimary,
                         ),
                       )
-                    : const Icon(Icons.gps_fixed_rounded, color: AppTheme.onPrimary),
+                    : const Icon(
+                        Icons.gps_fixed_rounded,
+                        color: AppTheme.onPrimary,
+                      ),
                 label: Text(
-                  _isFetchingLocation ? 'Requesting Access...' : 'Grant Location Access',
+                  _isFetchingLocation
+                      ? 'Requesting Access...'
+                      : 'Grant Location Access',
                   style: const TextStyle(
                     color: AppTheme.onPrimary,
                     fontWeight: FontWeight.bold,
@@ -312,7 +335,8 @@ class _UserMapTabState extends State<UserMapTab> {
               TextButton(
                 onPressed: () {
                   setState(() {
-                    _permissionGranted = true; // Temporary bypass to show Accra center
+                    _permissionGranted =
+                        true; // Temporary bypass to show Accra center
                   });
                 },
                 child: const Text(
@@ -344,7 +368,7 @@ class _UserMapTabState extends State<UserMapTab> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: AppTheme.primary.withOpacity(0.2),
+                  color: AppTheme.primary.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -392,7 +416,7 @@ class _UserMapTabState extends State<UserMapTab> {
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.25),
+                    color: color.withValues(alpha: 0.25),
                     shape: BoxShape.circle,
                     border: Border.all(color: color, width: 2),
                   ),
@@ -414,12 +438,12 @@ class _UserMapTabState extends State<UserMapTab> {
   }
 
   Color _categoryToColor(IncidentCategory category) => switch (category) {
-        IncidentCategory.pothole => AppTheme.categoryPothole,
-        IncidentCategory.waterLeak => AppTheme.categoryWaterLeak,
-        IncidentCategory.structuralLightFailure => AppTheme.categoryLightFailure,
-        IncidentCategory.drainageBlockage => AppTheme.categoryDrainage,
-        IncidentCategory.roadDamage => AppTheme.categoryRoadDamage,
-      };
+    IncidentCategory.pothole => AppTheme.categoryPothole,
+    IncidentCategory.waterLeak => AppTheme.categoryWaterLeak,
+    IncidentCategory.structuralLightFailure => AppTheme.categoryLightFailure,
+    IncidentCategory.drainageBlockage => AppTheme.categoryDrainage,
+    IncidentCategory.roadDamage => AppTheme.categoryRoadDamage,
+  };
 }
 
 class _CategoryFilterChips extends StatelessWidget {
@@ -443,11 +467,13 @@ class _CategoryFilterChips extends StatelessWidget {
               label: const Text('All'),
               selected: selectedCategory == null,
               onSelected: (_) => onSelected(null),
-              backgroundColor: AppTheme.surface.withOpacity(0.9),
-              selectedColor: AppTheme.primary.withOpacity(0.2),
+              backgroundColor: AppTheme.surface.withValues(alpha: 0.9),
+              selectedColor: AppTheme.primary.withValues(alpha: 0.2),
               checkmarkColor: AppTheme.primary,
               side: BorderSide(
-                color: selectedCategory == null ? AppTheme.primary : AppTheme.divider,
+                color: selectedCategory == null
+                    ? AppTheme.primary
+                    : AppTheme.divider,
               ),
             ),
           ),
@@ -459,8 +485,8 @@ class _CategoryFilterChips extends StatelessWidget {
                 label: Text('${cat.emoji} ${cat.displayName}'),
                 selected: isSelected,
                 onSelected: (selected) => onSelected(selected ? cat : null),
-                backgroundColor: AppTheme.surface.withOpacity(0.9),
-                selectedColor: AppTheme.primary.withOpacity(0.2),
+                backgroundColor: AppTheme.surface.withValues(alpha: 0.9),
+                selectedColor: AppTheme.primary.withValues(alpha: 0.2),
                 checkmarkColor: AppTheme.primary,
                 side: BorderSide(
                   color: isSelected ? AppTheme.primary : AppTheme.divider,
@@ -524,20 +550,23 @@ class _MapLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppTheme.surface.withOpacity(0.9),
+      color: AppTheme.surface.withValues(alpha: 0.9),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: AppTheme.radiusCard),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppTheme.md, vertical: AppTheme.sm),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.md,
+          vertical: AppTheme.sm,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Active Reports: ${reports.length}',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -553,7 +582,9 @@ class _ReportDetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(report.timestamp);
+    final formattedDate = DateFormat(
+      'MMM dd, yyyy - hh:mm a',
+    ).format(report.timestamp);
 
     return Container(
       margin: const EdgeInsets.all(AppTheme.md),
@@ -578,9 +609,9 @@ class _ReportDetailCard extends StatelessWidget {
             children: [
               Text(
                 '${report.category.emoji} ${report.category.displayName}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               IconButton(
                 padding: EdgeInsets.zero,
@@ -593,18 +624,18 @@ class _ReportDetailCard extends StatelessWidget {
           const SizedBox(height: AppTheme.xs),
           Text(
             report.title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: AppTheme.xs),
           Text(
             report.description,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.onSurfaceMuted,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppTheme.onSurfaceMuted),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -615,9 +646,9 @@ class _ReportDetailCard extends StatelessWidget {
               StatusBadge(status: report.status),
               Text(
                 formattedDate,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.onSurfaceMuted,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppTheme.onSurfaceMuted),
               ),
             ],
           ),

@@ -21,7 +21,7 @@ class LoadingOverlay extends StatelessWidget {
         child,
         if (isLoading)
           Container(
-            color: Colors.black.withOpacity(0.45),
+            color: Colors.black.withValues(alpha: 0.45),
             child: Center(
               child: Container(
                 padding: const EdgeInsets.all(AppTheme.lg),
@@ -30,7 +30,7 @@ class LoadingOverlay extends StatelessWidget {
                   borderRadius: AppTheme.radiusCard,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       blurRadius: 20,
                     ),
                   ],
@@ -88,9 +88,10 @@ class _ShimmerPlaceholderState extends State<ShimmerPlaceholder>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.3, end: 0.7).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.3,
+      end: 0.7,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -108,7 +109,7 @@ class _ShimmerPlaceholderState extends State<ShimmerPlaceholder>
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: AppTheme.divider.withOpacity(_animation.value),
+            color: AppTheme.divider.withValues(alpha: _animation.value),
             borderRadius: widget.borderRadius ?? AppTheme.radiusButton,
           ),
         );
@@ -164,10 +165,7 @@ class EmptyState extends StatelessWidget {
             ),
             if (action != null && actionLabel != null) ...[
               const SizedBox(height: AppTheme.lg),
-              OutlinedButton(
-                onPressed: action,
-                child: Text(actionLabel!),
-              ),
+              OutlinedButton(onPressed: action, child: Text(actionLabel!)),
             ],
           ],
         ),

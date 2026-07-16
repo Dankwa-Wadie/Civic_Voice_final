@@ -31,8 +31,10 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
           startIdx.clamp(0, reports.length),
           endIdx,
         );
-        final totalPages =
-            (reports.length / _rowsPerPage).ceil().clamp(1, double.infinity).toInt();
+        final totalPages = (reports.length / _rowsPerPage)
+            .ceil()
+            .clamp(1, double.infinity)
+            .toInt();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -64,7 +66,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primary.withOpacity(0.12),
+                        color: AppTheme.primary.withValues(alpha: 0.12),
                         borderRadius: AppTheme.radiusChip,
                       ),
                       child: Text(
@@ -83,14 +85,24 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
             // ── Data View (Responsive Layout) ────────────────────────────
             Expanded(
               child: reports.isEmpty
-                  ? _EmptyTableState(hasFilters: vm.hasActiveFilters, onClear: vm.clearFilters)
+                  ? _EmptyTableState(
+                      hasFilters: vm.hasActiveFilters,
+                      onClear: vm.clearFilters,
+                    )
                   : LayoutBuilder(
                       builder: (context, constraints) {
                         if (constraints.maxWidth < 700) {
-                          return _buildMobileList(context, vm, pageReports, startIdx);
+                          return _buildMobileList(
+                            context,
+                            vm,
+                            pageReports,
+                            startIdx,
+                          );
                         }
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: AppTheme.lg),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.lg,
+                          ),
                           child: DataTable2(
                             columnSpacing: AppTheme.md,
                             horizontalMargin: AppTheme.md,
@@ -100,9 +112,11 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                             headingRowColor: WidgetStatePropertyAll(
                               AppTheme.surfaceVariant,
                             ),
-                            dataRowColor: WidgetStateProperty.resolveWith((states) {
+                            dataRowColor: WidgetStateProperty.resolveWith((
+                              states,
+                            ) {
                               if (states.contains(WidgetState.hovered)) {
-                                return AppTheme.primary.withOpacity(0.05);
+                                return AppTheme.primary.withValues(alpha: 0.05);
                               }
                               return Colors.transparent;
                             }),
@@ -114,11 +128,23 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                             sortAscending: vm.sortAscending,
                             columns: [
                               _col('#', fixedWidth: 48),
-                              _col('District', onSort: (i, a) => vm.setSort(1, a)),
-                              _col('Category', onSort: (i, a) => vm.setSort(2, a)),
+                              _col(
+                                'District',
+                                onSort: (i, a) => vm.setSort(1, a),
+                              ),
+                              _col(
+                                'Category',
+                                onSort: (i, a) => vm.setSort(2, a),
+                              ),
                               _col('Title', onSort: (i, a) => vm.setSort(3, a)),
-                              _col('Status', onSort: (i, a) => vm.setSort(4, a)),
-                              _col('Reporter', onSort: (i, a) => vm.setSort(5, a)),
+                              _col(
+                                'Status',
+                                onSort: (i, a) => vm.setSort(4, a),
+                              ),
+                              _col(
+                                'Reporter',
+                                onSort: (i, a) => vm.setSort(5, a),
+                              ),
                               _col('Date', onSort: (i, a) => vm.setSort(6, a)),
                               _col('Action', fixedWidth: 140),
                             ],
@@ -218,9 +244,9 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
               const SizedBox(height: AppTheme.xs),
               Text(
                 report.description,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppTheme.onSurface,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: AppTheme.onSurface),
               ),
               const SizedBox(height: AppTheme.md),
               const Divider(height: 1),
@@ -235,7 +261,13 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                       children: [
                         _buildDetailRow(context, 'District', report.district),
                         const SizedBox(height: AppTheme.xs),
-                        _buildDetailRow(context, 'Reporter', report.reporterName.startsWith('anonymous:') ? 'Anonymous Citizen' : report.reporterName),
+                        _buildDetailRow(
+                          context,
+                          'Reporter',
+                          report.reporterName.startsWith('anonymous:')
+                              ? 'Anonymous Citizen'
+                              : report.reporterName,
+                        ),
                         const SizedBox(height: AppTheme.xs),
                         _buildDetailRow(context, 'Date', dateStr),
                       ],
@@ -254,7 +286,9 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                           )
                         : Container(
                             height: 36,
-                            padding: const EdgeInsets.symmetric(horizontal: AppTheme.sm),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppTheme.sm,
+                            ),
                             decoration: BoxDecoration(
                               color: AppTheme.surfaceVariant,
                               borderRadius: AppTheme.radiusButton,
@@ -298,10 +332,10 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                         vertical: AppTheme.xs,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.success.withOpacity(0.12),
+                        color: AppTheme.success.withValues(alpha: 0.12),
                         borderRadius: AppTheme.radiusChip,
                         border: Border.all(
-                          color: AppTheme.success.withOpacity(0.4),
+                          color: AppTheme.success.withValues(alpha: 0.4),
                         ),
                       ),
                       child: const Text(
@@ -336,9 +370,9 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
         Expanded(
           child: Text(
             value,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppTheme.onSurface,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppTheme.onSurface),
           ),
         ),
       ],
@@ -372,23 +406,16 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
     IncidentReport report,
   ) {
     final isUpdating = vm.updatingId == report.id;
-    final dateStr =
-        DateFormat('MMM d, y').format(report.timestamp);
+    final dateStr = DateFormat('MMM d, y').format(report.timestamp);
     final nextStatuses = report.status.nextStatuses;
 
     return DataRow2(
       cells: [
-        DataCell(Text(
-          '$idx',
-          style: Theme.of(context).textTheme.bodySmall,
-        )),
-        DataCell(Text(
-          report.district,
-          style: Theme.of(context).textTheme.bodyMedium,
-        )),
+        DataCell(Text('$idx', style: Theme.of(context).textTheme.bodySmall)),
         DataCell(
-          CategoryBadge(category: report.category),
+          Text(report.district, style: Theme.of(context).textTheme.bodyMedium),
         ),
+        DataCell(CategoryBadge(category: report.category)),
         DataCell(
           Tooltip(
             message: report.description,
@@ -401,14 +428,15 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
           ),
         ),
         DataCell(StatusBadge(status: report.status)),
-        DataCell(Text(
-          report.reporterName.startsWith('anonymous:') ? 'Anonymous Citizen' : report.reporterName,
-          style: Theme.of(context).textTheme.bodyMedium,
-        )),
-        DataCell(Text(
-          dateStr,
-          style: Theme.of(context).textTheme.bodySmall,
-        )),
+        DataCell(
+          Text(
+            report.reporterName.startsWith('anonymous:')
+                ? 'Anonymous Citizen'
+                : report.reporterName,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        DataCell(Text(dateStr, style: Theme.of(context).textTheme.bodySmall)),
         DataCell(
           isUpdating
               ? const SizedBox(
@@ -420,42 +448,38 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                   ),
                 )
               : nextStatuses.isEmpty
-                  ? Chip(
-                      label: const Text('Closed',
-                          style: TextStyle(fontSize: 11)),
-                      backgroundColor: AppTheme.success.withOpacity(0.1),
-                      side: BorderSide(
-                        color: AppTheme.success.withOpacity(0.3),
-                      ),
-                    )
-                  : DropdownButton<IncidentStatus>(
-                      value: null,
-                      hint: Text(
-                        'Advance →',
-                        style: TextStyle(
-                          color: AppTheme.primary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      underline: const SizedBox.shrink(),
-                      dropdownColor: AppTheme.surfaceElevated,
-                      items: nextStatuses.map((s) {
-                        return DropdownMenuItem(
-                          value: s,
-                          child: Text(
-                            s.displayName,
-                            style: TextStyle(
-                              color: _statusColor(s),
-                              fontSize: 13,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (s) {
-                        if (s != null) vm.updateStatus(report.id, s);
-                      },
+              ? Chip(
+                  label: const Text('Closed', style: TextStyle(fontSize: 11)),
+                  backgroundColor: AppTheme.success.withValues(alpha: 0.1),
+                  side: BorderSide(
+                    color: AppTheme.success.withValues(alpha: 0.3),
+                  ),
+                )
+              : DropdownButton<IncidentStatus>(
+                  value: null,
+                  hint: Text(
+                    'Advance →',
+                    style: TextStyle(
+                      color: AppTheme.primary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
                     ),
+                  ),
+                  underline: const SizedBox.shrink(),
+                  dropdownColor: AppTheme.surfaceElevated,
+                  items: nextStatuses.map((s) {
+                    return DropdownMenuItem(
+                      value: s,
+                      child: Text(
+                        s.displayName,
+                        style: TextStyle(color: _statusColor(s), fontSize: 13),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (s) {
+                    if (s != null) vm.updateStatus(report.id, s);
+                  },
+                ),
         ),
       ],
     );
@@ -603,7 +627,7 @@ class _DropdownFilter<T> extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.sm),
       decoration: BoxDecoration(
         color: value != null
-            ? AppTheme.primary.withOpacity(0.1)
+            ? AppTheme.primary.withValues(alpha: 0.1)
             : AppTheme.surfaceVariant,
         borderRadius: AppTheme.radiusButton,
         border: Border.all(
@@ -632,10 +656,15 @@ class _DropdownFilter<T> extends StatelessWidget {
               value: null,
               child: Text('All $label', style: const TextStyle(fontSize: 13)),
             ),
-            ...items.map((item) => DropdownMenuItem<T?>(
-                  value: item,
-                  child: Text(itemLabel(item), style: const TextStyle(fontSize: 13)),
-                )),
+            ...items.map(
+              (item) => DropdownMenuItem<T?>(
+                value: item,
+                child: Text(
+                  itemLabel(item),
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ),
+            ),
           ],
           onChanged: onChanged,
         ),
@@ -722,10 +751,7 @@ class _PaginationBar extends StatelessWidget {
 }
 
 class _EmptyTableState extends StatelessWidget {
-  const _EmptyTableState({
-    required this.hasFilters,
-    required this.onClear,
-  });
+  const _EmptyTableState({required this.hasFilters, required this.onClear});
   final bool hasFilters;
   final VoidCallback onClear;
 
@@ -736,9 +762,7 @@ class _EmptyTableState extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            hasFilters
-                ? Icons.filter_alt_off_outlined
-                : Icons.inbox_outlined,
+            hasFilters ? Icons.filter_alt_off_outlined : Icons.inbox_outlined,
             size: 48,
             color: AppTheme.onSurfaceDim,
           ),

@@ -22,7 +22,9 @@ class ReportFormScreen extends StatelessWidget {
         return Scaffold(
           backgroundColor: AppTheme.background,
           appBar: AppBar(
-            title: Text('Report Incident — Step ${vm.currentStep + 1} of ${vm.totalSteps}'),
+            title: Text(
+              'Report Incident — Step ${vm.currentStep + 1} of ${vm.totalSteps}',
+            ),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_rounded),
               onPressed: () {
@@ -42,7 +44,9 @@ class ReportFormScreen extends StatelessWidget {
                 LinearProgressIndicator(
                   value: (vm.currentStep + 1) / vm.totalSteps,
                   backgroundColor: AppTheme.divider,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppTheme.primary,
+                  ),
                   minHeight: 3,
                 ),
                 Expanded(
@@ -87,7 +91,9 @@ class _Step1Category extends StatelessWidget {
     return Consumer<ReportSubmissionViewModel>(
       builder: (context, vm, _) {
         final width = MediaQuery.of(context).size.width;
-        final double ratio = width < 360 ? 1.5 : 1.35; // Responsive child aspect ratio for grid
+        final double ratio = width < 360
+            ? 1.5
+            : 1.35; // Responsive child aspect ratio for grid
         return Padding(
           padding: const EdgeInsets.all(AppTheme.lg),
           child: Column(
@@ -115,7 +121,7 @@ class _Step1Category extends StatelessWidget {
                     return Card(
                       margin: EdgeInsets.zero,
                       color: isSelected
-                          ? color.withOpacity(0.15)
+                          ? color.withValues(alpha: 0.15)
                           : AppTheme.surface,
                       shape: RoundedRectangleBorder(
                         borderRadius: AppTheme.radiusCard,
@@ -137,15 +143,13 @@ class _Step1Category extends StatelessWidget {
                             const SizedBox(height: AppTheme.sm),
                             Text(
                               cat.displayName,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
+                              style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(
-                                color: isSelected ? color : null,
-                                fontWeight: isSelected
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                              ),
+                                    color: isSelected ? color : null,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                  ),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -190,7 +194,10 @@ class _Step2DetailsState extends State<_Step2Details> {
         'There is a massive pothole in the middle of the road near the traffic light, causing drivers to swerve dangerously.';
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        final vm = Provider.of<ReportSubmissionViewModel>(context, listen: false);
+        final vm = Provider.of<ReportSubmissionViewModel>(
+          context,
+          listen: false,
+        );
         vm.setTitle(_titleCtrl.text);
         vm.setDescription(_descCtrl.text);
       }
@@ -216,66 +223,66 @@ class _Step2DetailsState extends State<_Step2Details> {
             child: Form(
               key: _formKey,
               child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Describe the issue',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                const SizedBox(height: AppTheme.xs),
-                Text(
-                  'Help responders understand the severity.',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: AppTheme.xl),
-                TextFormField(
-                  controller: _titleCtrl,
-                  onChanged: vm.setTitle,
-                  maxLength: 80,
-                  style: const TextStyle(color: AppTheme.onSurface),
-                  decoration: const InputDecoration(
-                    labelText: 'Short title *',
-                    hintText: 'e.g. Large pothole on Spintex Road',
-                    prefixIcon: Icon(Icons.title_rounded, size: 18),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Describe the issue',
+                    style: Theme.of(context).textTheme.headlineLarge,
                   ),
-                  validator: (v) => (v == null || v.trim().length < 5)
-                      ? 'Title must be at least 5 characters'
-                      : null,
-                ),
-                const SizedBox(height: AppTheme.md),
-                TextFormField(
-                  controller: _descCtrl,
-                  onChanged: vm.setDescription,
-                  maxLines: 5,
-                  maxLength: 500,
-                  style: const TextStyle(color: AppTheme.onSurface),
-                  decoration: const InputDecoration(
-                    labelText: 'Detailed description *',
-                    hintText:
-                        'Describe the size, risk level, and exact location within the street…',
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.only(bottom: 64),
-                      child: Icon(Icons.notes_rounded, size: 18),
+                  const SizedBox(height: AppTheme.xs),
+                  Text(
+                    'Help responders understand the severity.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: AppTheme.xl),
+                  TextFormField(
+                    controller: _titleCtrl,
+                    onChanged: vm.setTitle,
+                    maxLength: 80,
+                    style: const TextStyle(color: AppTheme.onSurface),
+                    decoration: const InputDecoration(
+                      labelText: 'Short title *',
+                      hintText: 'e.g. Large pothole on Spintex Road',
+                      prefixIcon: Icon(Icons.title_rounded, size: 18),
                     ),
-                    alignLabelWithHint: true,
+                    validator: (v) => (v == null || v.trim().length < 5)
+                        ? 'Title must be at least 5 characters'
+                        : null,
                   ),
-                  validator: (v) => (v == null || v.trim().length < 10)
-                      ? 'Description must be at least 10 characters'
-                      : null,
-                ),
-                const SizedBox(height: AppTheme.lg),
-                _NextButton(
-                  enabled: vm.step2Valid,
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      vm.nextStep();
-                    }
-                  },
-                ),
-              ],
+                  const SizedBox(height: AppTheme.md),
+                  TextFormField(
+                    controller: _descCtrl,
+                    onChanged: vm.setDescription,
+                    maxLines: 5,
+                    maxLength: 500,
+                    style: const TextStyle(color: AppTheme.onSurface),
+                    decoration: const InputDecoration(
+                      labelText: 'Detailed description *',
+                      hintText:
+                          'Describe the size, risk level, and exact location within the street…',
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(bottom: 64),
+                        child: Icon(Icons.notes_rounded, size: 18),
+                      ),
+                      alignLabelWithHint: true,
+                    ),
+                    validator: (v) => (v == null || v.trim().length < 10)
+                        ? 'Description must be at least 10 characters'
+                        : null,
+                  ),
+                  const SizedBox(height: AppTheme.lg),
+                  _NextButton(
+                    enabled: vm.step2Valid,
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        vm.nextStep();
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-         ),
         );
       },
     );
@@ -329,11 +336,16 @@ class _Step3LocationState extends State<_Step3Location> {
   Map<String, LatLng> _getDistrictCenters() {
     final Map<String, List<LatLng>> grouped = {};
     for (final report in MockCivicDataRepository.seedData) {
-      grouped.putIfAbsent(report.district, () => []).add(LatLng(report.latitude, report.longitude));
+      grouped
+          .putIfAbsent(report.district, () => [])
+          .add(LatLng(report.latitude, report.longitude));
     }
     return grouped.map((district, points) {
-      final avgLat = points.map((p) => p.latitude).reduce((a, b) => a + b) / points.length;
-      final avgLng = points.map((p) => p.longitude).reduce((a, b) => a + b) / points.length;
+      final avgLat =
+          points.map((p) => p.latitude).reduce((a, b) => a + b) / points.length;
+      final avgLng =
+          points.map((p) => p.longitude).reduce((a, b) => a + b) /
+          points.length;
       return MapEntry(district, LatLng(avgLat, avgLng));
     });
   }
@@ -341,7 +353,10 @@ class _Step3LocationState extends State<_Step3Location> {
   @override
   Widget build(BuildContext context) {
     final districtCenters = _getDistrictCenters();
-    final uniqueDistricts = MockCivicDataRepository.seedData.map((r) => r.district).toSet().toList();
+    final uniqueDistricts = MockCivicDataRepository.seedData
+        .map((r) => r.district)
+        .toSet()
+        .toList();
 
     return Consumer<ReportSubmissionViewModel>(
       builder: (context, vm, _) {
@@ -360,7 +375,7 @@ class _Step3LocationState extends State<_Step3Location> {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: AppTheme.md),
-              
+
               // ── Search/Type in District ─────────────────────────────────────
               TextField(
                 controller: _searchCtrl,
@@ -387,7 +402,11 @@ class _Step3LocationState extends State<_Step3Location> {
                   }
                   setState(() {
                     _matchingDistricts = uniqueDistricts
-                        .where((d) => d.toLowerCase().contains(val.trim().toLowerCase()))
+                        .where(
+                          (d) => d.toLowerCase().contains(
+                            val.trim().toLowerCase(),
+                          ),
+                        )
                         .toList();
                   });
                 },
@@ -408,7 +427,10 @@ class _Step3LocationState extends State<_Step3Location> {
                       final dist = _matchingDistricts[index];
                       return ListTile(
                         dense: true,
-                        title: Text(dist, style: const TextStyle(fontWeight: FontWeight.w600)),
+                        title: Text(
+                          dist,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                         onTap: () {
                           final center = districtCenters[dist] ?? _accraCentre;
                           vm.setLocation(center.latitude, center.longitude);
@@ -444,7 +466,8 @@ class _Step3LocationState extends State<_Step3Location> {
                     ),
                     children: [
                       TileLayer(
-                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                         userAgentPackageName: 'com.civicvoice.civic_voice',
                       ),
                       MarkerLayer(
@@ -477,9 +500,9 @@ class _Step3LocationState extends State<_Step3Location> {
                           ? 'Fetching location…'
                           : '${vm.latitude.toStringAsFixed(4)}° N, ${vm.longitude.toStringAsFixed(4)}° ${vm.longitude < 0 ? 'W' : 'E'}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.onSurfaceMuted,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: AppTheme.onSurfaceMuted,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   OutlinedButton.icon(
@@ -494,7 +517,10 @@ class _Step3LocationState extends State<_Step3Location> {
                             ),
                           )
                         : const Icon(Icons.my_location_rounded, size: 14),
-                    label: const Text('Use Current Location', style: TextStyle(fontSize: 12)),
+                    label: const Text(
+                      'Use Current Location',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
                 ],
               ),
@@ -503,7 +529,9 @@ class _Step3LocationState extends State<_Step3Location> {
               // ── Attach Photo Section ────────────────────────────────────────
               Text(
                 'Attach Photo (Optional)',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: AppTheme.sm),
               vm.imageFile != null
@@ -516,7 +544,7 @@ class _Step3LocationState extends State<_Step3Location> {
                       onGallery: vm.pickImageFromGallery,
                     ),
               const SizedBox(height: AppTheme.xl),
-              
+
               _NextButton(
                 enabled: !vm.isFetchingLocation,
                 label: 'Review & Submit',
@@ -565,7 +593,11 @@ class _ImagePreview extends StatelessWidget {
             ),
             child: IconButton(
               onPressed: onRemove,
-              icon: const Icon(Icons.close_rounded, color: Colors.white, size: 18),
+              icon: const Icon(
+                Icons.close_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
               constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
               padding: EdgeInsets.zero,
             ),
@@ -620,9 +652,8 @@ class _Step4Review extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (_) => SubmissionSuccessScreen(
-                  reportId: vm.submittedId,
-                ),
+                builder: (_) =>
+                    SubmissionSuccessScreen(reportId: vm.submittedId),
               ),
             );
           });
@@ -642,7 +673,10 @@ class _Step4Review extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: AppTheme.xl),
-              _ReviewCard(label: 'Category', value: vm.selectedCategory?.displayName ?? ''),
+              _ReviewCard(
+                label: 'Category',
+                value: vm.selectedCategory?.displayName ?? '',
+              ),
               const SizedBox(height: AppTheme.sm),
               _ReviewCard(label: 'Title', value: vm.title),
               const SizedBox(height: AppTheme.sm),
@@ -672,9 +706,13 @@ class _Step4Review extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(
-                      vm.isAnonymous ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                      vm.isAnonymous
+                          ? Icons.visibility_off_rounded
+                          : Icons.visibility_rounded,
                       size: 18,
-                      color: vm.isAnonymous ? Colors.amber[300] : AppTheme.primaryLight,
+                      color: vm.isAnonymous
+                          ? Colors.amber[300]
+                          : AppTheme.primaryLight,
                     ),
                     const SizedBox(width: AppTheme.sm),
                     Expanded(
@@ -704,8 +742,8 @@ class _Step4Review extends StatelessWidget {
                     Switch(
                       value: vm.isAnonymous,
                       onChanged: vm.setAnonymous,
-                      activeColor: Colors.amber[400],
-                      activeTrackColor: Colors.amber.withOpacity(0.3),
+                      activeThumbColor: Colors.amber[400],
+                      activeTrackColor: Colors.amber.withValues(alpha: 0.3),
                     ),
                   ],
                 ),
@@ -715,10 +753,10 @@ class _Step4Review extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(AppTheme.sm),
                   decoration: BoxDecoration(
-                    color: AppTheme.error.withOpacity(0.10),
+                    color: AppTheme.error.withValues(alpha: 0.10),
                     borderRadius: AppTheme.radiusButton,
                     border: Border.all(
-                      color: AppTheme.error.withOpacity(0.3),
+                      color: AppTheme.error.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Text(

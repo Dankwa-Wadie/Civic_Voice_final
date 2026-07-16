@@ -7,7 +7,6 @@ import '../../../../core/widgets/stat_card.dart';
 import '../../../../../domain/enums/incident_category.dart';
 import '../../../../../domain/enums/incident_status.dart';
 import '../../../../../data/models/incident_report.dart';
-import '../../../../../data/repositories/mock_civic_data_repository.dart';
 
 class OverviewTab extends StatelessWidget {
   const OverviewTab({super.key});
@@ -142,7 +141,8 @@ class _ResponsiveStatGrid extends StatelessWidget {
       aspectRatio = 1.7;
     } else {
       crossAxisCount = 1;
-      aspectRatio = 2.1; // Taller card height on mobile to prevent text clipping
+      aspectRatio =
+          2.1; // Taller card height on mobile to prevent text clipping
     }
 
     return GridView.count(
@@ -158,10 +158,7 @@ class _ResponsiveStatGrid extends StatelessWidget {
 }
 
 class _CategoryBarChart extends StatelessWidget {
-  const _CategoryBarChart({
-    required this.byCategory,
-    required this.total,
-  });
+  const _CategoryBarChart({required this.byCategory, required this.total});
 
   final Map<IncidentCategory, int> byCategory;
   final int total;
@@ -182,9 +179,7 @@ class _CategoryBarChart extends StatelessWidget {
         children: categories.map((cat) {
           final count = byCategory[cat] ?? 0;
           final pct = total > 0 ? count / total : 0.0;
-          final color = AppTheme.categoryColor(
-            cat.name.toLowerCase(),
-          );
+          final color = AppTheme.categoryColor(cat.name.toLowerCase());
           return Padding(
             padding: const EdgeInsets.only(bottom: AppTheme.md),
             child: Column(
@@ -192,10 +187,7 @@ class _CategoryBarChart extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      cat.emoji,
-                      style: const TextStyle(fontSize: 14),
-                    ),
+                    Text(cat.emoji, style: const TextStyle(fontSize: 14)),
                     const SizedBox(width: AppTheme.sm),
                     Expanded(
                       child: Text(
@@ -218,7 +210,7 @@ class _CategoryBarChart extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: pct,
                     minHeight: 8,
-                    backgroundColor: color.withOpacity(0.12),
+                    backgroundColor: color.withValues(alpha: 0.12),
                     valueColor: AlwaysStoppedAnimation<Color>(color),
                   ),
                 ),
@@ -240,11 +232,10 @@ class _DistrictTable extends StatelessWidget {
     // Group by district
     final Map<String, Map<String, int>> districtStats = {};
     for (final r in reports) {
-      districtStats.putIfAbsent(r.district, () => {
-        'total': 0,
-        'resolved': 0,
-        'active': 0,
-      });
+      districtStats.putIfAbsent(
+        r.district,
+        () => {'total': 0, 'resolved': 0, 'active': 0},
+      );
       districtStats[r.district]!['total'] =
           (districtStats[r.district]!['total'] ?? 0) + 1;
       if (r.status == IncidentStatus.resolved) {
@@ -257,8 +248,9 @@ class _DistrictTable extends StatelessWidget {
     }
 
     final sorted = districtStats.entries.toList()
-      ..sort((a, b) =>
-          (b.value['total'] ?? 0).compareTo(a.value['total'] ?? 0));
+      ..sort(
+        (a, b) => (b.value['total'] ?? 0).compareTo(a.value['total'] ?? 0),
+      );
 
     return Container(
       decoration: BoxDecoration(
@@ -323,7 +315,7 @@ class _DistrictTable extends StatelessWidget {
             final stats = entry.value.value;
             return Container(
               color: idx.isOdd
-                  ? AppTheme.surfaceVariant.withOpacity(0.5)
+                  ? AppTheme.surfaceVariant.withValues(alpha: 0.5)
                   : Colors.transparent,
               padding: const EdgeInsets.symmetric(
                 horizontal: AppTheme.md,
