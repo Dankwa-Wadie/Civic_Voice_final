@@ -1,6 +1,6 @@
 # CivicVoice
 
-CivicVoice is a modern, responsive civic incident reporting platform built for Accra, Ghana. It empowers citizens to submit, track, and discuss public utility, infrastructure, and environmental issues, while providing municipal administrators with a powerful dashboard to prioritize, map, and resolve reports.
+CivicVoice is a modern, responsive civic incident reporting platform built for Accra, Ghana. It empowers citizens to submit, track, and discuss public utility, infrastructure, and environmental issues, while providing municipal administrators with a powerful dashboard to prioritize, map, and resolve reports
 
 ---
 
