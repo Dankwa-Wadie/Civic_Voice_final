@@ -20,7 +20,7 @@ CivicVoice is a modern, responsive civic incident reporting platform built for A
 
 ---
 
-## Key Features
+## Key Features for use
 
 - **Citizen Incident Reporting:**
   - **Categorized Submissions:** Submit issues under categories like Road Hazards, Waste Management, Water Supply, Power Outage, and Public Safety.
