@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../view_models/dashboard_view_model.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 import 'tabs/overview_tab.dart';
 import 'tabs/reports_table_tab.dart';
 import 'tabs/map_tab.dart';
@@ -131,6 +132,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
               tooltip: 'Refresh reports',
             ),
           ),
+          // Theme Toggle Button (Dark / Light mode)
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) {
+              final isDark = themeProvider.isDarkMode;
+              return IconButton(
+                icon: Icon(
+                  isDark ? Icons.wb_sunny_rounded : Icons.dark_mode_rounded,
+                  color: isDark ? Colors.amber[400] : AppTheme.primary,
+                  size: 20,
+                ),
+                tooltip: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+                onPressed: () {
+                  themeProvider.setThemeMode(
+                    isDark ? ThemeMode.light : ThemeMode.dark,
+                  );
+                },
+              );
+            },
+          ),
           // Report new incident button
           Padding(
             padding: const EdgeInsets.only(right: AppTheme.sm),
@@ -183,6 +203,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         setState(() => _selectedIndex = i),
                     extended: MediaQuery.of(context).size.width > 900,
                     minExtendedWidth: 180,
+                    trailing: Expanded(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: AppTheme.md),
+                          child: Consumer<ThemeProvider>(
+                            builder: (context, themeProvider, _) {
+                              final isDark = themeProvider.isDarkMode;
+                              final isExtended =
+                                  MediaQuery.of(context).size.width > 900;
+                              if (isExtended) {
+                                return TextButton.icon(
+                                  onPressed: () {
+                                    themeProvider.setThemeMode(
+                                      isDark
+                                          ? ThemeMode.light
+                                          : ThemeMode.dark,
+                                    );
+                                  },
+                                  icon: Icon(
+                                    isDark
+                                        ? Icons.wb_sunny_rounded
+                                        : Icons.dark_mode_rounded,
+                                    color: isDark
+                                        ? Colors.amber[400]
+                                        : AppTheme.primary,
+                                    size: 18,
+                                  ),
+                                  label: Text(
+                                    isDark ? 'Light Mode' : 'Dark Mode',
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? Colors.amber[400]
+                                          : AppTheme.primary,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                );
+                              }
+                              return IconButton(
+                                icon: Icon(
+                                  isDark
+                                      ? Icons.wb_sunny_rounded
+                                      : Icons.dark_mode_rounded,
+                                  color: isDark
+                                      ? Colors.amber[400]
+                                      : AppTheme.primary,
+                                  size: 20,
+                                ),
+                                tooltip: isDark
+                                    ? 'Switch to Light Mode'
+                                    : 'Switch to Dark Mode',
+                                onPressed: () {
+                                  themeProvider.setThemeMode(
+                                    isDark ? ThemeMode.light : ThemeMode.dark,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
                     destinations: _navItems
                         .map(
                           (item) => NavigationRailDestination(
