@@ -187,18 +187,18 @@ class _CategoryFilterChips extends StatelessWidget {
               label: const Text('All'),
               selected: selectedCategory == null,
               onSelected: (_) => onSelected(null),
-              backgroundColor: AppTheme.surface.withValues(alpha: 0.92),
+              backgroundColor: context.themeSurface.withValues(alpha: 0.92),
               selectedColor: AppTheme.primary.withValues(alpha: 0.2),
               checkmarkColor: AppTheme.primary,
               side: BorderSide(
                 color: selectedCategory == null
                     ? AppTheme.primary
-                    : AppTheme.divider,
+                    : context.themeDivider,
               ),
               labelStyle: TextStyle(
                 color: selectedCategory == null
                     ? AppTheme.primary
-                    : AppTheme.onSurfaceMuted,
+                    : context.themeOnSurfaceMuted,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -212,16 +212,16 @@ class _CategoryFilterChips extends StatelessWidget {
                 label: Text('${cat.emoji} ${cat.displayName}'),
                 selected: isSelected,
                 onSelected: (_) => onSelected(isSelected ? null : cat),
-                backgroundColor: AppTheme.surface.withValues(alpha: 0.92),
+                backgroundColor: context.themeSurface.withValues(alpha: 0.92),
                 selectedColor: AppTheme.primary.withValues(alpha: 0.2),
                 checkmarkColor: AppTheme.primary,
                 side: BorderSide(
-                  color: isSelected ? AppTheme.primary : AppTheme.divider,
+                  color: isSelected ? AppTheme.primary : context.themeDivider,
                 ),
                 labelStyle: TextStyle(
                   color: isSelected
                       ? AppTheme.primary
-                      : AppTheme.onSurfaceMuted,
+                      : context.themeOnSurfaceMuted,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
@@ -268,7 +268,7 @@ class _MapControlButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppTheme.surface,
+      color: context.themeSurface,
       borderRadius: AppTheme.radiusButton,
       elevation: 4,
       shadowColor: Colors.black45,
@@ -279,7 +279,7 @@ class _MapControlButton extends StatelessWidget {
           width: 48,
           height: 48,
           alignment: Alignment.center,
-          child: Icon(icon, color: AppTheme.onSurface, size: 20),
+          child: Icon(icon, color: context.themeOnSurface, size: 20),
         ),
       ),
     );
@@ -295,9 +295,9 @@ class _MapLegend extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppTheme.sm + 2),
       decoration: BoxDecoration(
-        color: AppTheme.surface.withValues(alpha: 0.92),
+        color: context.themeSurface.withValues(alpha: 0.92),
         borderRadius: AppTheme.radiusCard,
-        border: Border.all(color: AppTheme.divider),
+        border: Border.all(color: context.themeDivider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,7 +317,7 @@ class _MapLegend extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(cat.emoji, style: const TextStyle(fontSize: 12)),
+                  Text(cat.emoji, style: TextStyle(fontSize: 12)),
                   const SizedBox(width: 4),
                   Text(
                     '${cat.displayName} ($count)',
@@ -349,9 +349,9 @@ class _ReportBottomSheet extends StatelessWidget {
     final nextStatuses = report.status.nextStatuses;
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: context.themeSurface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: const Border(top: BorderSide(color: AppTheme.divider)),
+        border: Border(top: BorderSide(color: context.themeDivider)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.3),
@@ -370,7 +370,7 @@ class _ReportBottomSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppTheme.divider,
+                color: context.themeDivider,
                 borderRadius: AppTheme.radiusChip,
               ),
             ),
@@ -414,9 +414,9 @@ class _ReportBottomSheet extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close_rounded),
+                            icon: Icon(Icons.close_rounded),
                             onPressed: onClose,
-                            color: AppTheme.onSurfaceMuted,
+                            color: context.themeOnSurfaceMuted,
                           ),
                         ],
                       ),
@@ -436,10 +436,10 @@ class _ReportBottomSheet extends StatelessWidget {
                       const SizedBox(height: AppTheme.sm),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.person_outline_rounded,
                             size: 14,
-                            color: AppTheme.onSurfaceDim,
+                            color: context.themeOnSurfaceDim,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -449,10 +449,10 @@ class _ReportBottomSheet extends StatelessWidget {
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           const SizedBox(width: AppTheme.md),
-                          const Icon(
+                          Icon(
                             Icons.schedule_rounded,
                             size: 14,
-                            color: AppTheme.onSurfaceDim,
+                            color: context.themeOnSurfaceDim,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -465,7 +465,7 @@ class _ReportBottomSheet extends StatelessWidget {
                       ),
                       if (nextStatuses.isNotEmpty) ...[
                         const SizedBox(height: AppTheme.md),
-                        const Divider(),
+                        Divider(),
                         const SizedBox(height: AppTheme.sm),
                         Text(
                           'Advance Status',
@@ -491,7 +491,7 @@ class _ReportBottomSheet extends StatelessWidget {
                               ),
                               child: Text(
                                 '→ ${s.displayName}',
-                                style: const TextStyle(fontSize: 13),
+                                style: TextStyle(fontSize: 13),
                               ),
                             );
                           }).toList(),

@@ -20,10 +20,10 @@ void main() {
       repository.dispose();
     });
 
-    test('loads all 55 reports on initialization', () async {
+    test('loads all 60 reports on initialization', () async {
       // Allow the async initialization to complete
       await Future.delayed(const Duration(milliseconds: 100));
-      expect(vm.allReports.length, equals(55));
+      expect(vm.allReports.length, equals(60));
       expect(vm.isLoading, isFalse);
     });
 
@@ -113,9 +113,9 @@ void main() {
       }
     });
 
-    test('availableDistricts returns 6 unique districts', () async {
+    test('availableDistricts returns 10 unique districts', () async {
       await Future.delayed(const Duration(milliseconds: 100));
-      expect(vm.availableDistricts.length, equals(6));
+      expect(vm.availableDistricts.length, equals(10));
     });
   });
 

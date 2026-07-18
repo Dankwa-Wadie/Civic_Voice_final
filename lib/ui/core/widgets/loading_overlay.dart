@@ -26,7 +26,7 @@ class LoadingOverlay extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(AppTheme.lg),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceElevated,
+                  color: context.themeSurfaceElevated,
                   borderRadius: AppTheme.radiusCard,
                   boxShadow: [
                     BoxShadow(
@@ -109,7 +109,7 @@ class _ShimmerPlaceholderState extends State<ShimmerPlaceholder>
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: AppTheme.divider.withValues(alpha: _animation.value),
+            color: context.themeDivider.withValues(alpha: _animation.value),
             borderRadius: widget.borderRadius ?? AppTheme.radiusButton,
           ),
         );
@@ -146,10 +146,10 @@ class EmptyState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppTheme.lg),
               decoration: BoxDecoration(
-                color: AppTheme.surfaceVariant,
+                color: context.themeSurfaceVariant,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 40, color: AppTheme.onSurfaceDim),
+              child: Icon(icon, size: 40, color: context.themeOnSurfaceDim),
             ),
             const SizedBox(height: AppTheme.md),
             Text(

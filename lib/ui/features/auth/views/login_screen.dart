@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen>
     return ChangeNotifierProvider(
       create: (_) => LoginViewModel(),
       child: Scaffold(
-        backgroundColor: AppTheme.background,
+        backgroundColor: context.themeBackground,
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           behavior: HitTestBehavior.opaque,
@@ -93,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen>
                           child: SlideTransition(
                             position: _slideAnimation,
                             child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 420),
+                              constraints: BoxConstraints(maxWidth: 420),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -196,7 +196,7 @@ class _LogoSection extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(
+          child: Icon(
             Icons.location_city_rounded,
             color: Colors.white,
             size: 36,
@@ -244,9 +244,9 @@ class _LoginCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppTheme.xl),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: context.themeSurface,
         borderRadius: AppTheme.radiusCard,
-        border: Border.all(color: AppTheme.divider),
+        border: Border.all(color: context.themeDivider),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.25),
@@ -278,7 +278,7 @@ class _LoginCard extends StatelessWidget {
                 keyboardType: TextInputType.emailAddress,
                 autofillHints: const [AutofillHints.email],
                 onChanged: vm.setEmail,
-                style: const TextStyle(color: AppTheme.onSurface),
+                style: TextStyle(color: context.themeOnSurface),
                 decoration: const InputDecoration(
                   labelText: 'Email address',
                   prefixIcon: Icon(Icons.email_outlined, size: 18),
@@ -295,20 +295,20 @@ class _LoginCard extends StatelessWidget {
                 obscureText: obscurePassword,
                 autofillHints: const [AutofillHints.password],
                 onChanged: vm.setPassword,
-                style: const TextStyle(color: AppTheme.onSurface),
+                style: TextStyle(color: context.themeOnSurface),
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  prefixIcon: const Icon(Icons.lock_outlined, size: 18),
+                  prefixIcon: Icon(Icons.lock_outlined, size: 18),
                   suffixIcon: IconButton(
                     icon: Icon(
                       obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
                       size: 22,
-                      color: AppTheme.onSurfaceDim,
+                      color: context.themeOnSurfaceDim,
                     ),
                     onPressed: onToggleObscure,
-                    constraints: const BoxConstraints(
+                    constraints: BoxConstraints(
                       minWidth: 48,
                       minHeight: 48,
                     ),
@@ -335,7 +335,7 @@ class _LoginCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.error_outline_rounded,
                         color: AppTheme.error,
                         size: 16,
@@ -344,7 +344,7 @@ class _LoginCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           vm.errorMessage,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.error,
                             fontSize: 13,
                           ),
@@ -379,7 +379,7 @@ class _LoginCard extends StatelessWidget {
                   vm.isSignUp
                       ? 'Already have an account? Sign In'
                       : "Don't have an account? Sign Up",
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.primaryLight,
                     fontWeight: FontWeight.w600,
                   ),

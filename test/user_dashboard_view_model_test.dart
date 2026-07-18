@@ -50,7 +50,7 @@ void main() {
     test('initial state loads successfully', () async {
       await Future.delayed(const Duration(milliseconds: 100));
       expect(vm.isLoading, isFalse);
-      expect(vm.allReports.length, equals(55));
+      expect(vm.allReports.length, equals(60));
       expect(vm.forumPosts.length, equals(5));
       expect(vm.currentUserEmail, equals('citizen@civicvoice.net'));
       expect(vm.currentUserName, equals('citizen'));

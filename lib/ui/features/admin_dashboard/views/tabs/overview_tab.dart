@@ -171,9 +171,9 @@ class _CategoryBarChart extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppTheme.lg),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: context.themeSurface,
         borderRadius: AppTheme.radiusCard,
-        border: Border.all(color: AppTheme.divider),
+        border: Border.all(color: context.themeDivider),
       ),
       child: Column(
         children: categories.map((cat) {
@@ -254,9 +254,9 @@ class _DistrictTable extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: context.themeSurface,
         borderRadius: AppTheme.radiusCard,
-        border: Border.all(color: AppTheme.divider),
+        border: Border.all(color: context.themeDivider),
       ),
       child: Column(
         children: [
@@ -315,7 +315,7 @@ class _DistrictTable extends StatelessWidget {
             final stats = entry.value.value;
             return Container(
               color: idx.isOdd
-                  ? AppTheme.surfaceVariant.withValues(alpha: 0.5)
+                  ? context.themeSurfaceVariant.withValues(alpha: 0.5)
                   : Colors.transparent,
               padding: const EdgeInsets.symmetric(
                 horizontal: AppTheme.md,

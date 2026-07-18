@@ -51,7 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final isWide = MediaQuery.of(context).size.width > 700;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: context.themeBackground,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,
@@ -204,12 +204,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           : NavigationBar(
               selectedIndex: _selectedIndex,
               onDestinationSelected: (i) => setState(() => _selectedIndex = i),
-              backgroundColor: AppTheme.surface,
+              backgroundColor: context.themeSurface,
               indicatorColor: AppTheme.primary.withValues(alpha: 0.15),
               destinations: _navItems
                   .map(
                     (item) => NavigationDestination(
-                      icon: Icon(item.icon, color: AppTheme.onSurfaceDim),
+                      icon: Icon(item.icon, color: context.themeOnSurfaceDim),
                       selectedIcon: Icon(
                         item.selectedIcon,
                         color: AppTheme.primary,

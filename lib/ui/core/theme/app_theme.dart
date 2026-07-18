@@ -423,3 +423,30 @@ class AppTheme {
         _ => onSurfaceDim,
       };
 }
+
+extension CivicVoiceThemeExtension on BuildContext {
+  ThemeData get theme => Theme.of(this);
+  ColorScheme get colorScheme => theme.colorScheme;
+  bool get isDarkMode => theme.brightness == Brightness.dark;
+
+  Color get themeBackground => theme.scaffoldBackgroundColor;
+  Color get themeSurface => colorScheme.surface;
+  Color get themeDivider => colorScheme.outline;
+  
+  Color get themeSurfaceVariant {
+    return isDarkMode ? const Color(0xFF252830) : const Color(0xFFF1F3F4);
+  }
+
+  Color get themeSurfaceElevated {
+    return isDarkMode ? const Color(0xFF2C2F3A) : const Color(0xFFF8F9FA);
+  }
+
+  Color get themeOnSurface => colorScheme.onSurface;
+  Color get themeOnSurfaceMuted {
+    return isDarkMode ? const Color(0xFF9AA0B4) : const Color(0xFF5F6368);
+  }
+  Color get themeOnSurfaceDim {
+    return isDarkMode ? const Color(0xFF5F6475) : const Color(0xFF80868B);
+  }
+}
+

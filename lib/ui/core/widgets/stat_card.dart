@@ -73,9 +73,9 @@ class _StatCardState extends State<StatCard>
     return Container(
       padding: const EdgeInsets.all(AppTheme.md),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: context.themeSurface,
         borderRadius: AppTheme.radiusCard,
-        border: Border.all(color: AppTheme.divider),
+        border: Border.all(color: context.themeDivider),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
@@ -108,7 +108,7 @@ class _StatCardState extends State<StatCard>
               return Text(
                 _countAnimation.value.toInt().toString(),
                 style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                  color: AppTheme.onSurface,
+                  color: context.themeOnSurface,
                   fontWeight: FontWeight.w800,
                 ),
               );
@@ -119,7 +119,7 @@ class _StatCardState extends State<StatCard>
             widget.title,
             style: Theme.of(
               context,
-            ).textTheme.titleMedium?.copyWith(color: AppTheme.onSurfaceMuted),
+            ).textTheme.titleMedium?.copyWith(color: context.themeOnSurfaceMuted),
           ),
           if (widget.subtitle != null) ...[
             const SizedBox(height: 2),

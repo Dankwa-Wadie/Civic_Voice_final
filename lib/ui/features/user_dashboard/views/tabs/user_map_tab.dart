@@ -188,7 +188,7 @@ class _UserMapTabState extends State<UserMapTab> {
                   FloatingActionButton(
                     heroTag: 'my_location_btn',
                     mini: true,
-                    backgroundColor: AppTheme.surface,
+                    backgroundColor: context.themeSurface,
                     foregroundColor: AppTheme.primary,
                     onPressed: () async {
                       await _getUserLocation();
@@ -207,7 +207,7 @@ class _UserMapTabState extends State<UserMapTab> {
                         }
                       }
                     },
-                    child: const Icon(Icons.my_location_rounded, size: 20),
+                    child: Icon(Icons.my_location_rounded, size: 20),
                   ),
                   const SizedBox(height: AppTheme.sm),
                   _ZoomControls(
@@ -258,7 +258,7 @@ class _UserMapTabState extends State<UserMapTab> {
 
   Widget _buildPermissionGatingScreen() {
     return Container(
-      color: AppTheme.background,
+      color: context.themeBackground,
       padding: const EdgeInsets.all(AppTheme.xl),
       child: Center(
         child: SingleChildScrollView(
@@ -271,7 +271,7 @@ class _UserMapTabState extends State<UserMapTab> {
                   color: AppTheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.location_on_outlined,
                   size: 80,
                   color: AppTheme.primary,
@@ -289,7 +289,7 @@ class _UserMapTabState extends State<UserMapTab> {
               Text(
                 'Civic Voice needs your location permission to show active infrastructure reports around you and mark your position on the map.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.onSurfaceMuted,
+                  color: context.themeOnSurfaceMuted,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -307,7 +307,7 @@ class _UserMapTabState extends State<UserMapTab> {
                           color: AppTheme.onPrimary,
                         ),
                       )
-                    : const Icon(
+                    : Icon(
                         Icons.gps_fixed_rounded,
                         color: AppTheme.onPrimary,
                       ),
@@ -315,7 +315,7 @@ class _UserMapTabState extends State<UserMapTab> {
                   _isFetchingLocation
                       ? 'Requesting Access...'
                       : 'Grant Location Access',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.onPrimary,
                     fontWeight: FontWeight.bold,
                   ),
@@ -339,9 +339,9 @@ class _UserMapTabState extends State<UserMapTab> {
                         true; // Temporary bypass to show Accra center
                   });
                 },
-                child: const Text(
+                child: Text(
                   'Continue without Location',
-                  style: TextStyle(color: AppTheme.onSurfaceMuted),
+                  style: TextStyle(color: context.themeOnSurfaceMuted),
                 ),
               ),
             ],
@@ -423,7 +423,7 @@ class _UserMapTabState extends State<UserMapTab> {
                   child: Center(
                     child: Text(
                       report.category.emoji,
-                      style: const TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: 14),
                     ),
                   ),
                 ),
@@ -467,13 +467,13 @@ class _CategoryFilterChips extends StatelessWidget {
               label: const Text('All'),
               selected: selectedCategory == null,
               onSelected: (_) => onSelected(null),
-              backgroundColor: AppTheme.surface.withValues(alpha: 0.9),
+              backgroundColor: context.themeSurface.withValues(alpha: 0.9),
               selectedColor: AppTheme.primary.withValues(alpha: 0.2),
               checkmarkColor: AppTheme.primary,
               side: BorderSide(
                 color: selectedCategory == null
                     ? AppTheme.primary
-                    : AppTheme.divider,
+                    : context.themeDivider,
               ),
             ),
           ),
@@ -485,11 +485,11 @@ class _CategoryFilterChips extends StatelessWidget {
                 label: Text('${cat.emoji} ${cat.displayName}'),
                 selected: isSelected,
                 onSelected: (selected) => onSelected(selected ? cat : null),
-                backgroundColor: AppTheme.surface.withValues(alpha: 0.9),
+                backgroundColor: context.themeSurface.withValues(alpha: 0.9),
                 selectedColor: AppTheme.primary.withValues(alpha: 0.2),
                 checkmarkColor: AppTheme.primary,
                 side: BorderSide(
-                  color: isSelected ? AppTheme.primary : AppTheme.divider,
+                  color: isSelected ? AppTheme.primary : context.themeDivider,
                 ),
               ),
             );
@@ -514,26 +514,26 @@ class _ZoomControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppTheme.surface,
+      color: context.themeSurface,
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: const Icon(Icons.add_rounded, size: 20),
+            icon: Icon(Icons.add_rounded, size: 20),
             onPressed: onZoomIn,
             tooltip: 'Zoom In',
           ),
-          const Divider(height: 1, indent: 8, endIndent: 8),
+          Divider(height: 1, indent: 8, endIndent: 8),
           IconButton(
-            icon: const Icon(Icons.remove_rounded, size: 20),
+            icon: Icon(Icons.remove_rounded, size: 20),
             onPressed: onZoomOut,
             tooltip: 'Zoom Out',
           ),
-          const Divider(height: 1, indent: 8, endIndent: 8),
+          Divider(height: 1, indent: 8, endIndent: 8),
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, size: 20),
+            icon: Icon(Icons.refresh_rounded, size: 20),
             onPressed: onReset,
             tooltip: 'Reset Zoom',
           ),
@@ -550,7 +550,7 @@ class _MapLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppTheme.surface.withValues(alpha: 0.9),
+      color: context.themeSurface.withValues(alpha: 0.9),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: AppTheme.radiusCard),
       child: Padding(
@@ -590,7 +590,7 @@ class _ReportDetailCard extends StatelessWidget {
       margin: const EdgeInsets.all(AppTheme.md),
       padding: const EdgeInsets.all(AppTheme.md),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: context.themeSurface,
         borderRadius: AppTheme.radiusCard,
         boxShadow: const [
           BoxShadow(
@@ -615,8 +615,8 @@ class _ReportDetailCard extends StatelessWidget {
               ),
               IconButton(
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                icon: const Icon(Icons.close_rounded, size: 20),
+                constraints: BoxConstraints(),
+                icon: Icon(Icons.close_rounded, size: 20),
                 onPressed: onClose,
               ),
             ],
@@ -635,7 +635,7 @@ class _ReportDetailCard extends StatelessWidget {
             report.description,
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.onSurfaceMuted),
+            ).textTheme.bodyMedium?.copyWith(color: context.themeOnSurfaceMuted),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -648,7 +648,7 @@ class _ReportDetailCard extends StatelessWidget {
                 formattedDate,
                 style: Theme.of(
                   context,
-                ).textTheme.bodySmall?.copyWith(color: AppTheme.onSurfaceMuted),
+                ).textTheme.bodySmall?.copyWith(color: context.themeOnSurfaceMuted),
               ),
             ],
           ),
