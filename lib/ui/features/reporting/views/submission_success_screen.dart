@@ -25,13 +25,11 @@ class _SubmissionSuccessScreenState extends State<SubmissionSuccessScreen>
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.5,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _controller.forward();
   }
 
@@ -64,12 +62,12 @@ class _SubmissionSuccessScreenState extends State<SubmissionSuccessScreen>
                         gradient: RadialGradient(
                           colors: [
                             AppTheme.success,
-                            AppTheme.success.withOpacity(0.6),
+                            AppTheme.success.withValues(alpha: 0.6),
                           ],
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppTheme.success.withOpacity(0.4),
+                            color: AppTheme.success.withValues(alpha: 0.4),
                             blurRadius: 32,
                             spreadRadius: 4,
                           ),
@@ -118,11 +116,11 @@ class _SubmissionSuccessScreenState extends State<SubmissionSuccessScreen>
                         const SizedBox(width: AppTheme.xs),
                         Text(
                           'Ref: ${widget.reportId.substring(0, 12).toUpperCase()}',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontFamily: 'monospace',
-                            letterSpacing: 1.0,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                fontFamily: 'monospace',
+                                letterSpacing: 1.0,
+                              ),
                         ),
                       ],
                     ),
@@ -133,7 +131,9 @@ class _SubmissionSuccessScreenState extends State<SubmissionSuccessScreen>
                     height: 48,
                     child: ElevatedButton.icon(
                       onPressed: () => Navigator.of(context).popUntil(
-                        (r) => r.settings.name == UserDashboardScreen.routeName || r.isFirst,
+                        (r) =>
+                            r.settings.name == UserDashboardScreen.routeName ||
+                            r.isFirst,
                       ),
                       icon: const Icon(Icons.dashboard_rounded, size: 18),
                       label: const Text('Back to Dashboard'),

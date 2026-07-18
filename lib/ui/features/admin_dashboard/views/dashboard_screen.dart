@@ -84,7 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 vertical: 1,
               ),
               decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.15),
+                color: AppTheme.primary.withValues(alpha: 0.15),
                 borderRadius: AppTheme.radiusChip,
               ),
               child: const Text(
@@ -102,7 +102,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           // Logout button
           IconButton(
-            icon: const Icon(Icons.logout_rounded, color: AppTheme.error, size: 20),
+            icon: const Icon(
+              Icons.logout_rounded,
+              color: AppTheme.error,
+              size: 20,
+            ),
             tooltip: 'Logout',
             onPressed: () async {
               final navigator = Navigator.of(context);
@@ -154,8 +158,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   )
                 : IconButton(
-                    icon: const Icon(Icons.add_circle_outline_rounded,
-                        color: AppTheme.primary, size: 22),
+                    icon: const Icon(
+                      Icons.add_circle_outline_rounded,
+                      color: AppTheme.primary,
+                      size: 22,
+                    ),
                     tooltip: 'New Report',
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
@@ -166,46 +173,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-    body: SafeArea(
-      child: isWide
-          ? Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: (i) =>
-                      setState(() => _selectedIndex = i),
-                  extended: MediaQuery.of(context).size.width > 900,
-                  minExtendedWidth: 180,
-                  destinations: _navItems
-                      .map(
-                        (item) => NavigationRailDestination(
-                          icon: Icon(item.icon),
-                          selectedIcon: Icon(item.selectedIcon),
-                          label: Text(item.label),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const VerticalDivider(width: 1),
-                Expanded(child: _buildBody()),
-              ],
-            )
-          : _buildBody(),
-    ),
+      body: SafeArea(
+        child: isWide
+            ? Row(
+                children: [
+                  NavigationRail(
+                    selectedIndex: _selectedIndex,
+                    onDestinationSelected: (i) =>
+                        setState(() => _selectedIndex = i),
+                    extended: MediaQuery.of(context).size.width > 900,
+                    minExtendedWidth: 180,
+                    destinations: _navItems
+                        .map(
+                          (item) => NavigationRailDestination(
+                            icon: Icon(item.icon),
+                            selectedIcon: Icon(item.selectedIcon),
+                            label: Text(item.label),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const VerticalDivider(width: 1),
+                  Expanded(child: _buildBody()),
+                ],
+              )
+            : _buildBody(),
+      ),
       bottomNavigationBar: isWide
           ? null
           : NavigationBar(
               selectedIndex: _selectedIndex,
-              onDestinationSelected: (i) =>
-                  setState(() => _selectedIndex = i),
+              onDestinationSelected: (i) => setState(() => _selectedIndex = i),
               backgroundColor: AppTheme.surface,
-              indicatorColor: AppTheme.primary.withOpacity(0.15),
+              indicatorColor: AppTheme.primary.withValues(alpha: 0.15),
               destinations: _navItems
                   .map(
                     (item) => NavigationDestination(
                       icon: Icon(item.icon, color: AppTheme.onSurfaceDim),
-                      selectedIcon: Icon(item.selectedIcon,
-                          color: AppTheme.primary),
+                      selectedIcon: Icon(
+                        item.selectedIcon,
+                        color: AppTheme.primary,
+                      ),
                       label: item.label,
                     ),
                   )

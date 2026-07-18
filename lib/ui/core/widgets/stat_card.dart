@@ -38,8 +38,10 @@ class _StatCardState extends State<StatCard>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
-    _countAnimation = Tween<double>(begin: 0, end: widget.value.toDouble())
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _countAnimation = Tween<double>(
+      begin: 0,
+      end: widget.value.toDouble(),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     _controller.forward();
   }
 
@@ -47,10 +49,13 @@ class _StatCardState extends State<StatCard>
   void didUpdateWidget(StatCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value) {
-      _countAnimation = Tween<double>(
-        begin: oldWidget.value.toDouble(),
-        end: widget.value.toDouble(),
-      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+      _countAnimation =
+          Tween<double>(
+            begin: oldWidget.value.toDouble(),
+            end: widget.value.toDouble(),
+          ).animate(
+            CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+          );
       _controller
         ..reset()
         ..forward();
@@ -73,7 +78,7 @@ class _StatCardState extends State<StatCard>
         border: Border.all(color: AppTheme.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -88,13 +93,12 @@ class _StatCardState extends State<StatCard>
               Container(
                 padding: const EdgeInsets.all(AppTheme.sm),
                 decoration: BoxDecoration(
-                  color: widget.color.withOpacity(0.12),
+                  color: widget.color.withValues(alpha: 0.12),
                   borderRadius: AppTheme.radiusButton,
                 ),
                 child: Icon(widget.icon, color: widget.color, size: 20),
               ),
-              if (widget.trend != null)
-                _TrendBadge(trend: widget.trend!),
+              if (widget.trend != null) _TrendBadge(trend: widget.trend!),
             ],
           ),
           const SizedBox(height: AppTheme.md),
@@ -113,9 +117,9 @@ class _StatCardState extends State<StatCard>
           const SizedBox(height: AppTheme.xs),
           Text(
             widget.title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppTheme.onSurfaceMuted,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: AppTheme.onSurfaceMuted),
           ),
           if (widget.subtitle != null) ...[
             const SizedBox(height: 2),
@@ -145,7 +149,7 @@ class _TrendBadge extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: AppTheme.radiusChip,
       ),
       child: Row(

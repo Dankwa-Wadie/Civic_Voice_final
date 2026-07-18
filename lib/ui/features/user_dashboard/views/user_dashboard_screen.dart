@@ -76,7 +76,9 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
           children: [
             Text(
               'CivicVoice Portal',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             Text(
               'Welcome, ${vm.currentUserName}',
@@ -86,12 +88,20 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.account_circle_outlined, color: AppTheme.primaryLight, size: 22),
+            icon: const Icon(
+              Icons.account_circle_outlined,
+              color: AppTheme.primaryLight,
+              size: 22,
+            ),
             tooltip: 'Profile Settings',
             onPressed: () => _showProfileSheet(context, vm),
           ),
           IconButton(
-            icon: const Icon(Icons.logout_rounded, color: AppTheme.error, size: 20),
+            icon: const Icon(
+              Icons.logout_rounded,
+              color: AppTheme.error,
+              size: 20,
+            ),
             tooltip: 'Logout',
             onPressed: () async {
               final navigator = Navigator.of(context);
@@ -107,9 +117,15 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
           unselectedLabelColor: AppTheme.onSurfaceMuted,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           tabs: const [
-            Tab(icon: Icon(Icons.assignment_rounded, size: 18), text: 'My Reports'),
+            Tab(
+              icon: Icon(Icons.assignment_rounded, size: 18),
+              text: 'My Reports',
+            ),
             Tab(icon: Icon(Icons.map_rounded, size: 18), text: 'Incident Map'),
-            Tab(icon: Icon(Icons.forum_rounded, size: 18), text: 'Community Forum'),
+            Tab(
+              icon: Icon(Icons.forum_rounded, size: 18),
+              text: 'Community Forum',
+            ),
           ],
         ),
       ),
@@ -135,8 +151,17 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
               onPressed: () {
                 Navigator.of(context).pushNamed(ReportFormScreen.routeName);
               },
-              icon: const Icon(Icons.add_location_alt_rounded, color: AppTheme.onPrimary),
-              label: const Text('Report Issue', style: TextStyle(color: AppTheme.onPrimary, fontWeight: FontWeight.bold)),
+              icon: const Icon(
+                Icons.add_location_alt_rounded,
+                color: AppTheme.onPrimary,
+              ),
+              label: const Text(
+                'Report Issue',
+                style: TextStyle(
+                  color: AppTheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               backgroundColor: AppTheme.primary,
             )
           : null,
@@ -152,7 +177,9 @@ class _MyReportsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (vm.isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primary));
+      return const Center(
+        child: CircularProgressIndicator(color: AppTheme.primary),
+      );
     }
 
     final reports = vm.myReports;
@@ -184,18 +211,37 @@ class _StatsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final total = reports.length;
-    final workedOn = reports.where((r) => r.status != IncidentStatus.submitted).length;
-    final resolved = reports.where((r) => r.status == IncidentStatus.resolved).length;
+    final workedOn = reports
+        .where((r) => r.status != IncidentStatus.submitted)
+        .length;
+    final resolved = reports
+        .where((r) => r.status == IncidentStatus.resolved)
+        .length;
 
     return Container(
       color: AppTheme.surface,
-      padding: const EdgeInsets.symmetric(vertical: AppTheme.md, horizontal: AppTheme.md),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppTheme.md,
+        horizontal: AppTheme.md,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _StatCard(title: 'Total', value: total.toString(), color: AppTheme.info),
-          _StatCard(title: 'Worked On', value: workedOn.toString(), color: AppTheme.warning),
-          _StatCard(title: 'Resolved', value: resolved.toString(), color: AppTheme.success),
+          _StatCard(
+            title: 'Total',
+            value: total.toString(),
+            color: AppTheme.info,
+          ),
+          _StatCard(
+            title: 'Worked On',
+            value: workedOn.toString(),
+            color: AppTheme.warning,
+          ),
+          _StatCard(
+            title: 'Resolved',
+            value: resolved.toString(),
+            color: AppTheme.success,
+          ),
         ],
       ),
     );
@@ -203,7 +249,11 @@ class _StatsHeader extends StatelessWidget {
 }
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({required this.title, required this.value, required this.color});
+  const _StatCard({
+    required this.title,
+    required this.value,
+    required this.color,
+  });
   final String title;
   final String value;
   final Color color;
@@ -217,10 +267,13 @@ class _StatCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: AppTheme.xs),
         shape: RoundedRectangleBorder(
           borderRadius: AppTheme.radiusCard,
-          side: BorderSide(color: AppTheme.divider.withOpacity(0.5)),
+          side: BorderSide(color: AppTheme.divider.withValues(alpha: 0.5)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppTheme.sm, horizontal: AppTheme.md),
+          padding: const EdgeInsets.symmetric(
+            vertical: AppTheme.sm,
+            horizontal: AppTheme.md,
+          ),
           child: Column(
             children: [
               Text(title, style: Theme.of(context).textTheme.bodySmall),
@@ -228,9 +281,9 @@ class _StatCard extends StatelessWidget {
               Text(
                 value,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  color: color,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ],
           ),
@@ -249,11 +302,17 @@ class _EmptyReportsState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.assignment_turned_in_rounded, size: 72, color: AppTheme.onSurfaceDim.withOpacity(0.5)),
+            Icon(
+              Icons.assignment_turned_in_rounded,
+              size: 72,
+              color: AppTheme.onSurfaceDim.withValues(alpha: 0.5),
+            ),
             const SizedBox(height: AppTheme.md),
             Text(
               'No Reports Yet',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppTheme.sm),
             Text(
@@ -273,25 +332,27 @@ class _ReportCard extends StatelessWidget {
   final IncidentReport report;
 
   Color _getStatusColor(IncidentStatus status) => switch (status) {
-        IncidentStatus.submitted => AppTheme.statusSubmitted,
-        IncidentStatus.reviewed => AppTheme.statusReviewed,
-        IncidentStatus.dispatched => AppTheme.statusDispatched,
-        IncidentStatus.resolved => AppTheme.statusResolved,
-      };
+    IncidentStatus.submitted => AppTheme.statusSubmitted,
+    IncidentStatus.reviewed => AppTheme.statusReviewed,
+    IncidentStatus.dispatched => AppTheme.statusDispatched,
+    IncidentStatus.resolved => AppTheme.statusResolved,
+  };
 
   Color _getCategoryColor(IncidentCategory category) => switch (category) {
-        IncidentCategory.pothole => AppTheme.categoryPothole,
-        IncidentCategory.waterLeak => AppTheme.categoryWaterLeak,
-        IncidentCategory.structuralLightFailure => AppTheme.categoryLightFailure,
-        IncidentCategory.drainageBlockage => AppTheme.categoryDrainage,
-        IncidentCategory.roadDamage => AppTheme.categoryRoadDamage,
-      };
+    IncidentCategory.pothole => AppTheme.categoryPothole,
+    IncidentCategory.waterLeak => AppTheme.categoryWaterLeak,
+    IncidentCategory.structuralLightFailure => AppTheme.categoryLightFailure,
+    IncidentCategory.drainageBlockage => AppTheme.categoryDrainage,
+    IncidentCategory.roadDamage => AppTheme.categoryRoadDamage,
+  };
 
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(report.status);
     final categoryColor = _getCategoryColor(report.category);
-    final formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(report.timestamp);
+    final formattedDate = DateFormat(
+      'MMM dd, yyyy - hh:mm a',
+    ).format(report.timestamp);
 
     return Card(
       color: AppTheme.surface,
@@ -314,7 +375,7 @@ class _ReportCard extends StatelessWidget {
                 height: 44,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: categoryColor.withOpacity(0.15),
+                  color: categoryColor.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Text(
@@ -333,7 +394,8 @@ class _ReportCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             report.title,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -352,7 +414,11 @@ class _ReportCard extends StatelessWidget {
                     const SizedBox(height: AppTheme.sm),
                     Row(
                       children: [
-                        Icon(Icons.location_on_rounded, color: AppTheme.onSurfaceDim, size: 12),
+                        Icon(
+                          Icons.location_on_rounded,
+                          color: AppTheme.onSurfaceDim,
+                          size: 12,
+                        ),
                         const SizedBox(width: AppTheme.xs),
                         Expanded(
                           child: Text(
@@ -417,9 +483,12 @@ class _ReportCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: AppTheme.sm, vertical: AppTheme.xs),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppTheme.sm,
+                          vertical: AppTheme.xs,
+                        ),
                         decoration: BoxDecoration(
-                          color: categoryColor.withOpacity(0.15),
+                          color: categoryColor.withValues(alpha: 0.15),
                           borderRadius: AppTheme.radiusChip,
                         ),
                         child: Row(
@@ -431,7 +500,11 @@ class _ReportCard extends StatelessWidget {
                             const SizedBox(width: AppTheme.xs),
                             Text(
                               report.category.displayName,
-                              style: TextStyle(color: categoryColor, fontSize: 12, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: categoryColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -447,14 +520,18 @@ class _ReportCard extends StatelessWidget {
                   const SizedBox(height: AppTheme.xs),
                   Text(
                     'Reference ID: ${report.id.toUpperCase()}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
                   ),
                   const SizedBox(height: AppTheme.md),
                   const Divider(color: AppTheme.divider),
                   const SizedBox(height: AppTheme.md),
                   Text(
                     'DESCRIPTION',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: AppTheme.xs),
                   Text(
@@ -464,12 +541,18 @@ class _ReportCard extends StatelessWidget {
                   const SizedBox(height: AppTheme.lg),
                   Text(
                     'LOCATION',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: AppTheme.xs),
                   Row(
                     children: [
-                      const Icon(Icons.location_pin, color: AppTheme.primary, size: 16),
+                      const Icon(
+                        Icons.location_pin,
+                        color: AppTheme.primary,
+                        size: 16,
+                      ),
                       const SizedBox(width: AppTheme.xs),
                       Text(
                         '${report.district} (${report.latitude.toStringAsFixed(5)}° N, ${report.longitude.toStringAsFixed(5)}° E)',
@@ -481,7 +564,9 @@ class _ReportCard extends StatelessWidget {
                   if (report.imageUrl.isNotEmpty) ...[
                     Text(
                       'PHOTO',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: AppTheme.xs),
                     ClipRRect(
@@ -495,7 +580,11 @@ class _ReportCard extends StatelessWidget {
                           width: double.infinity,
                           height: 200,
                           color: AppTheme.surfaceVariant,
-                          child: const Icon(Icons.image_not_supported_rounded, color: AppTheme.onSurfaceDim, size: 36),
+                          child: const Icon(
+                            Icons.image_not_supported_rounded,
+                            color: AppTheme.onSurfaceDim,
+                            size: 36,
+                          ),
                         ),
                       ),
                     ),
@@ -518,9 +607,12 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppTheme.sm, vertical: AppTheme.xs),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.sm,
+        vertical: AppTheme.xs,
+      ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: AppTheme.radiusChip,
       ),
       child: Text(
@@ -536,7 +628,7 @@ class _StatusBadge extends StatelessWidget {
 }
 
 class PinnedAnnouncement extends StatelessWidget {
-  const PinnedAnnouncement({required this.post, required this.vm});
+  const PinnedAnnouncement({super.key, required this.post, required this.vm});
   final ForumPost post;
   final UserDashboardViewModel vm;
 
@@ -544,19 +636,29 @@ class PinnedAnnouncement extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: AppTheme.md, vertical: AppTheme.sm),
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppTheme.md,
+        vertical: AppTheme.sm,
+      ),
       padding: const EdgeInsets.all(AppTheme.md),
       decoration: BoxDecoration(
-        color: AppTheme.warning.withOpacity(0.12),
+        color: AppTheme.warning.withValues(alpha: 0.12),
         borderRadius: AppTheme.radiusCard,
-        border: Border.all(color: AppTheme.warning.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: AppTheme.warning.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.push_pin_rounded, color: AppTheme.warning, size: 16),
+              const Icon(
+                Icons.push_pin_rounded,
+                color: AppTheme.warning,
+                size: 16,
+              ),
               const SizedBox(width: AppTheme.xs),
               Text(
                 'PINNED ANNOUNCEMENT',
@@ -569,7 +671,11 @@ class PinnedAnnouncement extends StatelessWidget {
               const Spacer(),
               if (vm.isAdmin)
                 IconButton(
-                  icon: const Icon(Icons.pin_drop_outlined, color: AppTheme.onSurfaceDim, size: 16),
+                  icon: const Icon(
+                    Icons.pin_drop_outlined,
+                    color: AppTheme.onSurfaceDim,
+                    size: 16,
+                  ),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () => vm.togglePinPost(post),
@@ -580,7 +686,9 @@ class PinnedAnnouncement extends StatelessWidget {
           const SizedBox(height: AppTheme.xs),
           Text(
             post.content,
-            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
           ),
           const SizedBox(height: AppTheme.xs),
           Text(
@@ -596,6 +704,7 @@ class PinnedAnnouncement extends StatelessWidget {
 // ── Forum Tab ────────────────────────────────────────────────────────────────
 class ForumTab extends StatelessWidget {
   const ForumTab({
+    super.key,
     required this.vm,
     required this.messageController,
     required this.scrollController,
@@ -610,7 +719,9 @@ class ForumTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (vm.isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primary));
+      return const Center(
+        child: CircularProgressIndicator(color: AppTheme.primary),
+      );
     }
 
     final posts = vm.forumPosts; // Index 0 is newest
@@ -618,7 +729,8 @@ class ForumTab extends StatelessWidget {
 
     return Column(
       children: [
-        if (pinnedPosts.isNotEmpty) PinnedAnnouncement(post: pinnedPosts.first, vm: vm),
+        if (pinnedPosts.isNotEmpty)
+          PinnedAnnouncement(post: pinnedPosts.first, vm: vm),
         Expanded(
           child: posts.isEmpty
               ? _EmptyForumState()
@@ -634,46 +746,50 @@ class ForumTab extends StatelessWidget {
                   },
                 ),
         ),
-        _ForumInputArea(
-          vm: vm,
-          controller: messageController,
-          onSend: onSend,
-        ),
+        _ForumInputArea(vm: vm, controller: messageController, onSend: onSend),
       ],
     );
   }
 }
 
 class ForumMessageBubble extends StatelessWidget {
-  const ForumMessageBubble({required this.post, required this.isMe, required this.vm});
+  const ForumMessageBubble({
+    super.key,
+    required this.post,
+    required this.isMe,
+    required this.vm,
+  });
   final ForumPost post;
   final bool isMe;
   final UserDashboardViewModel vm;
 
   Widget _buildRoleBadge(String email, String name) {
-    final bool isAnonAdmin = name.contains('Anonymous Admin') || email == 'anonymous-admin';
-    final bool isAnon = (name.contains('Anonymous') || email == 'anonymous') && !isAnonAdmin;
-    final bool isAdmin = email.contains('admin') || name.toLowerCase().contains('admin');
-    
+    final bool isAnonAdmin =
+        name.contains('Anonymous Admin') || email == 'anonymous-admin';
+    final bool isAnon =
+        (name.contains('Anonymous') || email == 'anonymous') && !isAnonAdmin;
+    final bool isAdmin =
+        email.contains('admin') || name.toLowerCase().contains('admin');
+
     final Color bgColor;
     final Color textColor;
     final String label;
 
     if (isAnonAdmin) {
       label = 'Anonymous Admin';
-      bgColor = Colors.deepOrange.withOpacity(0.15);
+      bgColor = Colors.deepOrange.withValues(alpha: 0.15);
       textColor = Colors.deepOrange;
     } else if (isAnon) {
       label = 'Anonymous';
-      bgColor = Colors.amber.withOpacity(0.15);
+      bgColor = Colors.amber.withValues(alpha: 0.15);
       textColor = Colors.amber[300]!;
     } else if (isAdmin) {
       label = 'Admin';
-      bgColor = AppTheme.error.withOpacity(0.15);
+      bgColor = AppTheme.error.withValues(alpha: 0.15);
       textColor = AppTheme.error;
     } else {
       label = 'Citizen';
-      bgColor = AppTheme.primary.withOpacity(0.15);
+      bgColor = AppTheme.primary.withValues(alpha: 0.15);
       textColor = AppTheme.primaryLight;
     }
 
@@ -715,7 +831,10 @@ class ForumMessageBubble extends StatelessWidget {
             bottomRight: Radius.circular(isMe ? 0 : 16),
           ),
           border: post.isPinned
-              ? Border.all(color: AppTheme.warning.withOpacity(0.6), width: 1.5)
+              ? Border.all(
+                  color: AppTheme.warning.withValues(alpha: 0.6),
+                  width: 1.5,
+                )
               : (isMe ? null : Border.all(color: AppTheme.divider)),
         ),
         child: Column(
@@ -730,7 +849,9 @@ class ForumMessageBubble extends StatelessWidget {
                     Text(
                       isMe ? 'You (${post.authorName})' : post.authorName,
                       style: TextStyle(
-                        color: isMe ? AppTheme.onPrimary.withOpacity(0.9) : AppTheme.primaryLight,
+                        color: isMe
+                            ? AppTheme.onPrimary.withValues(alpha: 0.9)
+                            : AppTheme.primaryLight,
                         fontWeight: FontWeight.bold,
                         fontSize: 11,
                       ),
@@ -743,14 +864,22 @@ class ForumMessageBubble extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (post.isPinned)
-                      const Icon(Icons.push_pin_rounded, color: AppTheme.warning, size: 12),
+                      const Icon(
+                        Icons.push_pin_rounded,
+                        color: AppTheme.warning,
+                        size: 12,
+                      ),
                     if (vm.isAdmin) ...[
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap: () => vm.togglePinPost(post),
                         child: Icon(
-                          post.isPinned ? Icons.pin_drop_rounded : Icons.push_pin_outlined,
-                          color: post.isPinned ? AppTheme.warning : AppTheme.onSurfaceDim,
+                          post.isPinned
+                              ? Icons.pin_drop_rounded
+                              : Icons.push_pin_outlined,
+                          color: post.isPinned
+                              ? AppTheme.warning
+                              : AppTheme.onSurfaceDim,
                           size: 14,
                         ),
                       ),
@@ -773,7 +902,9 @@ class ForumMessageBubble extends StatelessWidget {
               child: Text(
                 formattedTime,
                 style: TextStyle(
-                  color: isMe ? AppTheme.onPrimary.withOpacity(0.7) : AppTheme.onSurfaceDim,
+                  color: isMe
+                      ? AppTheme.onPrimary.withValues(alpha: 0.7)
+                      : AppTheme.onSurfaceDim,
                   fontSize: 10,
                 ),
               ),
@@ -799,7 +930,10 @@ class _ForumInputArea extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: AppTheme.surface,
-      padding: const EdgeInsets.symmetric(horizontal: AppTheme.md, vertical: AppTheme.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.md,
+        vertical: AppTheme.sm,
+      ),
       child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -821,7 +955,9 @@ class _ForumInputArea extends StatelessWidget {
                       hintText: vm.isAnonymousChat
                           ? 'Share anonymously...'
                           : 'Share an update or discuss Accra issues...',
-                      hintStyle: const TextStyle(color: AppTheme.onSurfaceMuted),
+                      hintStyle: const TextStyle(
+                        color: AppTheme.onSurfaceMuted,
+                      ),
                       fillColor: AppTheme.background,
                       filled: true,
                       border: OutlineInputBorder(
@@ -850,16 +986,22 @@ class _ForumInputArea extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  vm.isAnonymousChat ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                  vm.isAnonymousChat
+                      ? Icons.visibility_off_rounded
+                      : Icons.visibility_rounded,
                   size: 14,
-                  color: vm.isAnonymousChat ? Colors.amber[300] : AppTheme.onSurfaceDim,
+                  color: vm.isAnonymousChat
+                      ? Colors.amber[300]
+                      : AppTheme.onSurfaceDim,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   vm.isAnonymousChat ? 'Anonymous Mode' : 'Post publicly',
                   style: TextStyle(
                     fontSize: 11,
-                    color: vm.isAnonymousChat ? Colors.amber[300] : AppTheme.onSurfaceDim,
+                    color: vm.isAnonymousChat
+                        ? Colors.amber[300]
+                        : AppTheme.onSurfaceDim,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -874,8 +1016,8 @@ class _ForumInputArea extends StatelessWidget {
                   child: Switch(
                     value: vm.isAnonymousChat,
                     onChanged: vm.setAnonymousChat,
-                    activeColor: Colors.amber[400],
-                    activeTrackColor: Colors.amber.withOpacity(0.3),
+                    activeThumbColor: Colors.amber[400],
+                    activeTrackColor: Colors.amber.withValues(alpha: 0.3),
                   ),
                 ),
               ],
@@ -896,11 +1038,17 @@ class _EmptyForumState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.forum_outlined, size: 72, color: AppTheme.onSurfaceDim.withOpacity(0.5)),
+            Icon(
+              Icons.forum_outlined,
+              size: 72,
+              color: AppTheme.onSurfaceDim.withValues(alpha: 0.5),
+            ),
             const SizedBox(height: AppTheme.md),
             Text(
               'No Conversations Yet',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppTheme.sm),
             Text(
@@ -978,14 +1126,16 @@ class _ProfileSheetState extends State<_ProfileSheet> {
       _updateStatusText = 'Checking for updates...';
     });
     try {
-      final isUpdateAvailable = await _shorebird.isNewPatchAvailableForDownload();
+      final isUpdateAvailable = await _shorebird
+          .isNewPatchAvailableForDownload();
       setState(() {
         _isCheckingForUpdates = false;
         _isUpdateAvailable = isUpdateAvailable;
         if (isUpdateAvailable) {
           _updateStatusText = 'New live update available!';
         } else {
-          _updateStatusText = 'Application is up-to-date (Patch ${_currentPatch ?? 0})';
+          _updateStatusText =
+              'Application is up-to-date (Patch ${_currentPatch ?? 0})';
         }
       });
     } catch (e) {
@@ -1030,7 +1180,9 @@ class _ProfileSheetState extends State<_ProfileSheet> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.5)),
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.5),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -1051,8 +1203,12 @@ class _ProfileSheetState extends State<_ProfileSheet> {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: AppTheme.primary.withOpacity(0.15),
-                child: const Icon(Icons.person_rounded, color: AppTheme.primary, size: 28),
+                backgroundColor: AppTheme.primary.withValues(alpha: 0.15),
+                child: const Icon(
+                  Icons.person_rounded,
+                  color: AppTheme.primary,
+                  size: 28,
+                ),
               ),
               const SizedBox(width: AppTheme.md),
               Expanded(
@@ -1061,7 +1217,9 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                   children: [
                     Text(
                       'Profile Settings',
-                      style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -1076,7 +1234,10 @@ class _ProfileSheetState extends State<_ProfileSheet> {
           const SizedBox(height: AppTheme.lg),
           Text(
             'NICKNAME',
-            style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
           ),
           const SizedBox(height: AppTheme.sm),
           TextField(
@@ -1105,21 +1266,29 @@ class _ProfileSheetState extends State<_ProfileSheet> {
           const SizedBox(height: AppTheme.lg),
           Text(
             'APPEARANCE',
-            style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
           ),
           const SizedBox(height: AppTheme.sm),
           Row(
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () => widget.themeProvider.setThemeMode(ThemeMode.light),
+                  onTap: () =>
+                      widget.themeProvider.setThemeMode(ThemeMode.light),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: AppTheme.md),
                     decoration: BoxDecoration(
-                      color: !isDark ? AppTheme.primary.withOpacity(0.12) : theme.colorScheme.surface,
+                      color: !isDark
+                          ? AppTheme.primary.withValues(alpha: 0.12)
+                          : theme.colorScheme.surface,
                       borderRadius: AppTheme.radiusCard,
                       border: Border.all(
-                        color: !isDark ? AppTheme.primary : theme.colorScheme.outline,
+                        color: !isDark
+                            ? AppTheme.primary
+                            : theme.colorScheme.outline,
                         width: !isDark ? 2 : 1,
                       ),
                     ),
@@ -1127,14 +1296,18 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                       children: [
                         Icon(
                           Icons.wb_sunny_rounded,
-                          color: !isDark ? AppTheme.primary : theme.colorScheme.onSurface,
+                          color: !isDark
+                              ? AppTheme.primary
+                              : theme.colorScheme.onSurface,
                           size: 24,
                         ),
                         const SizedBox(height: AppTheme.sm),
                         Text(
                           'Light Mode',
                           style: TextStyle(
-                            color: !isDark ? AppTheme.primary : theme.colorScheme.onSurface,
+                            color: !isDark
+                                ? AppTheme.primary
+                                : theme.colorScheme.onSurface,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1146,14 +1319,19 @@ class _ProfileSheetState extends State<_ProfileSheet> {
               const SizedBox(width: AppTheme.md),
               Expanded(
                 child: GestureDetector(
-                  onTap: () => widget.themeProvider.setThemeMode(ThemeMode.dark),
+                  onTap: () =>
+                      widget.themeProvider.setThemeMode(ThemeMode.dark),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: AppTheme.md),
                     decoration: BoxDecoration(
-                      color: isDark ? AppTheme.primary.withOpacity(0.12) : theme.colorScheme.surface,
+                      color: isDark
+                          ? AppTheme.primary.withValues(alpha: 0.12)
+                          : theme.colorScheme.surface,
                       borderRadius: AppTheme.radiusCard,
                       border: Border.all(
-                        color: isDark ? AppTheme.primary : theme.colorScheme.outline,
+                        color: isDark
+                            ? AppTheme.primary
+                            : theme.colorScheme.outline,
                         width: isDark ? 2 : 1,
                       ),
                     ),
@@ -1161,14 +1339,18 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                       children: [
                         Icon(
                           Icons.dark_mode_rounded,
-                          color: isDark ? AppTheme.primary : theme.colorScheme.onSurface,
+                          color: isDark
+                              ? AppTheme.primary
+                              : theme.colorScheme.onSurface,
                           size: 24,
                         ),
                         const SizedBox(height: AppTheme.sm),
                         Text(
                           'Dark Mode',
                           style: TextStyle(
-                            color: isDark ? AppTheme.primary : theme.colorScheme.onSurface,
+                            color: isDark
+                                ? AppTheme.primary
+                                : theme.colorScheme.onSurface,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1182,15 +1364,20 @@ class _ProfileSheetState extends State<_ProfileSheet> {
           const SizedBox(height: AppTheme.lg),
           Text(
             'APPLICATION UPDATES',
-            style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
           ),
           const SizedBox(height: AppTheme.sm),
           Container(
             padding: const EdgeInsets.all(AppTheme.md),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceVariant,
+              color: theme.colorScheme.surfaceContainerHighest,
               borderRadius: AppTheme.radiusCard,
-              border: Border.all(color: theme.colorScheme.outline.withOpacity(0.3)),
+              border: Border.all(
+                color: theme.colorScheme.outline.withValues(alpha: 0.3),
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1198,8 +1385,12 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                 Row(
                   children: [
                     Icon(
-                      _isShorebirdAvailable ? Icons.offline_bolt_rounded : Icons.offline_bolt_outlined,
-                      color: _isShorebirdAvailable ? Colors.amber[300] : theme.colorScheme.onSurfaceVariant,
+                      _isShorebirdAvailable
+                          ? Icons.offline_bolt_rounded
+                          : Icons.offline_bolt_outlined,
+                      color: _isShorebirdAvailable
+                          ? Colors.amber[300]
+                          : theme.colorScheme.onSurfaceVariant,
                       size: 20,
                     ),
                     const SizedBox(width: AppTheme.sm),
@@ -1208,8 +1399,12 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _isShorebirdAvailable ? 'Live updates active' : 'Live updates inactive',
-                            style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                            _isShorebirdAvailable
+                                ? 'Live updates active'
+                                : 'Live updates inactive',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -1221,7 +1416,10 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                     ),
                     if (_currentPatch != null)
                       Chip(
-                        label: Text('Patch $_currentPatch', style: const TextStyle(fontSize: 10)),
+                        label: Text(
+                          'Patch $_currentPatch',
+                          style: const TextStyle(fontSize: 10),
+                        ),
                         padding: EdgeInsets.zero,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -1234,12 +1432,16 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                     children: [
                       if (!_isUpdateAvailable)
                         TextButton.icon(
-                          onPressed: _isCheckingForUpdates ? null : _checkForUpdates,
+                          onPressed: _isCheckingForUpdates
+                              ? null
+                              : _checkForUpdates,
                           icon: _isCheckingForUpdates
                               ? const SizedBox(
                                   width: 14,
                                   height: 14,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               : const Icon(Icons.refresh_rounded, size: 16),
                           label: const Text('Check for Updates'),
@@ -1250,7 +1452,9 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                             backgroundColor: AppTheme.primary,
                             foregroundColor: AppTheme.onPrimary,
                           ),
-                          onPressed: _isDownloadingUpdate ? null : _downloadAndInstallUpdate,
+                          onPressed: _isDownloadingUpdate
+                              ? null
+                              : _downloadAndInstallUpdate,
                           icon: _isDownloadingUpdate
                               ? const SizedBox(
                                   width: 14,
