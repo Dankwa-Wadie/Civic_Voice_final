@@ -108,6 +108,77 @@ class MockCivicDataRepository implements ICivicRepository {
 
   static List<IncidentReport> _buildSeedData() {
     return [
+      // ── User Mock Submissions (One for each Category) ──
+      IncidentReport(
+        id: 'cv_usr_pothole_01',
+        category: IncidentCategory.pothole,
+        title: 'Deep pothole on Oxford Street near Danquah Circle',
+        description:
+            'A very deep pothole has formed in the middle of Oxford Street. Vehicles are swerving into oncoming traffic to avoid damaging their tires.',
+        latitude: 5.5562,
+        longitude: -0.1812,
+        imageUrl: 'https://picsum.photos/seed/cv_usr_pothole/400/300',
+        status: IncidentStatus.submitted,
+        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+        reporterName: 'User Account (user@civicvoice.org)',
+        district: 'Osu Klottey',
+      ),
+      IncidentReport(
+        id: 'cv_usr_water_01',
+        category: IncidentCategory.waterLeak,
+        title: 'Burst pipe flooding main street in East Legon',
+        description:
+            'Water is gushing out heavily from an underground pipe leak on Boundary Road, eroding the road shoulder and wasting clean water.',
+        latitude: 5.6354,
+        longitude: -0.1601,
+        imageUrl: 'https://picsum.photos/seed/cv_usr_water/400/300',
+        status: IncidentStatus.submitted,
+        timestamp: DateTime.now().subtract(const Duration(hours: 4)),
+        reporterName: 'User Account (citizen.user@gmail.com)',
+        district: 'Ayawaso West',
+      ),
+      IncidentReport(
+        id: 'cv_usr_light_01',
+        category: IncidentCategory.structuralLightFailure,
+        title: 'Non-functional streetlights on Liberation Road',
+        description:
+            'Several consecutive streetlights near the Airport junction are dark, creating dangerous night-time driving conditions for commuters.',
+        latitude: 5.6011,
+        longitude: -0.1764,
+        imageUrl: 'https://picsum.photos/seed/cv_usr_light/400/300',
+        status: IncidentStatus.submitted,
+        timestamp: DateTime.now().subtract(const Duration(hours: 6)),
+        reporterName: 'User Account (user.app@civicvoice.org)',
+        district: 'Ayawaso West',
+      ),
+      IncidentReport(
+        id: 'cv_usr_drain_01',
+        category: IncidentCategory.drainageBlockage,
+        title: 'Clogged roadside storm drain near Kaneshie Market',
+        description:
+            'Debris and plastic refuse have completely blocked the primary gutter, causing standing water to accumulate across the road.',
+        latitude: 5.5645,
+        longitude: -0.2311,
+        imageUrl: 'https://picsum.photos/seed/cv_usr_drain/400/300',
+        status: IncidentStatus.submitted,
+        timestamp: DateTime.now().subtract(const Duration(hours: 8)),
+        reporterName: 'User Account (resident.user@yahoo.com)',
+        district: 'Okaikwei South',
+      ),
+      IncidentReport(
+        id: 'cv_usr_road_01',
+        category: IncidentCategory.roadDamage,
+        title: 'Collapsed asphalt shoulder along Spintex Road',
+        description:
+            'Heavy rain has eroded the edge of the asphalt shoulder near Papaye, leaving a steep drop-off next to the main driving lane.',
+        latitude: 5.6201,
+        longitude: -0.1198,
+        imageUrl: 'https://picsum.photos/seed/cv_usr_road/400/300',
+        status: IncidentStatus.submitted,
+        timestamp: DateTime.now().subtract(const Duration(hours: 10)),
+        reporterName: 'User Account (user.civic@gmail.com)',
+        district: 'Ledzokuku',
+      ),
       // ── 1 ──
       IncidentReport(
         id: 'cv_001',
