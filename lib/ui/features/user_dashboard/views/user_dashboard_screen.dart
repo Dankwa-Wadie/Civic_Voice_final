@@ -699,16 +699,26 @@ class PinnedAnnouncement extends StatelessWidget {
               ),
               const Spacer(),
               if (vm.isAdmin)
-                IconButton(
-                  icon: Icon(
-                    Icons.pin_drop_outlined,
-                    color: context.themeOnSurfaceDim,
-                    size: 16,
-                  ),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
+                TextButton.icon(
                   onPressed: () => vm.togglePinPost(post),
-                  tooltip: 'Unpin broadcast',
+                  icon: Icon(
+                    Icons.push_pin_outlined,
+                    color: AppTheme.warning,
+                    size: 14,
+                  ),
+                  label: const Text(
+                    'UNPIN',
+                    style: TextStyle(
+                      color: AppTheme.warning,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
                 ),
             ],
           ),
@@ -893,26 +903,32 @@ class ForumMessageBubble extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (post.isPinned)
-                      Icon(
-                        Icons.push_pin_rounded,
-                        color: AppTheme.warning,
-                        size: 12,
-                      ),
-                    if (vm.isAdmin) ...[
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: () => vm.togglePinPost(post),
-                        child: Icon(
-                          post.isPinned
-                              ? Icons.pin_drop_rounded
-                              : Icons.push_pin_outlined,
-                          color: post.isPinned
-                              ? AppTheme.warning
-                              : context.themeOnSurfaceDim,
-                          size: 14,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppTheme.warning.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.push_pin_rounded,
+                              color: AppTheme.warning,
+                              size: 10,
+                            ),
+                            const SizedBox(width: 2),
+                            const Text(
+                              'PINNED',
+                              style: TextStyle(
+                                color: AppTheme.warning,
+                                fontSize: 8,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
                   ],
                 ),
               ],
@@ -938,6 +954,50 @@ class ForumMessageBubble extends StatelessWidget {
                 ),
               ),
             ),
+            if (vm.isAdmin) ...[
+              const SizedBox(height: AppTheme.sm),
+              Divider(
+                height: 1,
+                color: isMe ? AppTheme.onPrimary.withValues(alpha: 0.2) : context.themeDivider,
+              ),
+              const SizedBox(height: AppTheme.xs),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => vm.togglePinPost(post),
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          post.isPinned
+                              ? Icons.pin_drop_rounded
+                              : Icons.push_pin_rounded,
+                          color: post.isPinned
+                              ? AppTheme.warning
+                              : (isMe ? AppTheme.onPrimary.withValues(alpha: 0.7) : context.themeOnSurfaceDim),
+                          size: 14,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          post.isPinned ? 'UNPIN ANNOUNCEMENT' : 'PIN TO TOP AS ANNOUNCEMENT',
+                          style: TextStyle(
+                            color: post.isPinned
+                                ? AppTheme.warning
+                                : (isMe ? AppTheme.onPrimary.withValues(alpha: 0.9) : context.themeOnSurfaceDim),
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
