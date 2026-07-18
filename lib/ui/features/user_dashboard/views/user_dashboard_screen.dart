@@ -67,9 +67,9 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     final vm = Provider.of<UserDashboardViewModel>(context);
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: context.themeBackground,
       appBar: AppBar(
-        backgroundColor: AppTheme.surface,
+        backgroundColor: context.themeSurface,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +88,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
         ),
         actions: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.account_circle_outlined,
               color: AppTheme.primaryLight,
               size: 22,
@@ -97,7 +97,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
             onPressed: () => _showProfileSheet(context, vm),
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.logout_rounded,
               color: AppTheme.error,
               size: 20,
@@ -113,9 +113,9 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppTheme.primary,
-          labelColor: AppTheme.onSurface,
-          unselectedLabelColor: AppTheme.onSurfaceMuted,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          labelColor: context.themeOnSurface,
+          unselectedLabelColor: context.themeOnSurfaceMuted,
+          labelStyle: TextStyle(fontWeight: FontWeight.bold),
           tabs: const [
             Tab(
               icon: Icon(Icons.assignment_rounded, size: 18),
@@ -151,7 +151,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
               onPressed: () {
                 Navigator.of(context).pushNamed(ReportFormScreen.routeName);
               },
-              icon: const Icon(
+              icon: Icon(
                 Icons.add_location_alt_rounded,
                 color: AppTheme.onPrimary,
               ),
@@ -219,7 +219,7 @@ class _StatsHeader extends StatelessWidget {
         .length;
 
     return Container(
-      color: AppTheme.surface,
+      color: context.themeSurface,
       padding: const EdgeInsets.symmetric(
         vertical: AppTheme.md,
         horizontal: AppTheme.md,
@@ -262,12 +262,12 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Card(
-        color: AppTheme.surfaceVariant,
+        color: context.themeSurfaceVariant,
         elevation: 0,
         margin: const EdgeInsets.symmetric(horizontal: AppTheme.xs),
         shape: RoundedRectangleBorder(
           borderRadius: AppTheme.radiusCard,
-          side: BorderSide(color: AppTheme.divider.withValues(alpha: 0.5)),
+          side: BorderSide(color: context.themeDivider.withValues(alpha: 0.5)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -305,7 +305,7 @@ class _EmptyReportsState extends StatelessWidget {
             Icon(
               Icons.assignment_turned_in_rounded,
               size: 72,
-              color: AppTheme.onSurfaceDim.withValues(alpha: 0.5),
+              color: context.themeOnSurfaceDim.withValues(alpha: 0.5),
             ),
             const SizedBox(height: AppTheme.md),
             Text(
@@ -355,12 +355,12 @@ class _ReportCard extends StatelessWidget {
     ).format(report.timestamp);
 
     return Card(
-      color: AppTheme.surface,
+      color: context.themeSurface,
       elevation: 0,
       margin: const EdgeInsets.only(bottom: AppTheme.md),
       shape: RoundedRectangleBorder(
         borderRadius: AppTheme.radiusCard,
-        side: const BorderSide(color: AppTheme.divider),
+        side: BorderSide(color: context.themeDivider),
       ),
       child: InkWell(
         borderRadius: AppTheme.radiusCard,
@@ -380,7 +380,7 @@ class _ReportCard extends StatelessWidget {
                 ),
                 child: Text(
                   report.category.emoji,
-                  style: const TextStyle(fontSize: 22),
+                  style: TextStyle(fontSize: 22),
                 ),
               ),
               const SizedBox(width: AppTheme.md),
@@ -416,7 +416,7 @@ class _ReportCard extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.location_on_rounded,
-                          color: AppTheme.onSurfaceDim,
+                          color: context.themeOnSurfaceDim,
                           size: 12,
                         ),
                         const SizedBox(width: AppTheme.xs),
@@ -447,7 +447,7 @@ class _ReportCard extends StatelessWidget {
   void _showReportDetailsSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.surface,
+      backgroundColor: context.themeSurface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -473,7 +473,7 @@ class _ReportCard extends StatelessWidget {
                       width: 48,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: AppTheme.divider,
+                        color: context.themeDivider,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -495,7 +495,7 @@ class _ReportCard extends StatelessWidget {
                           children: [
                             Text(
                               report.category.emoji,
-                              style: const TextStyle(fontSize: 14),
+                              style: TextStyle(fontSize: 14),
                             ),
                             const SizedBox(width: AppTheme.xs),
                             Text(
@@ -525,7 +525,7 @@ class _ReportCard extends StatelessWidget {
                     ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
                   ),
                   const SizedBox(height: AppTheme.md),
-                  const Divider(color: AppTheme.divider),
+                  Divider(color: context.themeDivider),
                   const SizedBox(height: AppTheme.md),
                   Text(
                     'DESCRIPTION',
@@ -548,7 +548,7 @@ class _ReportCard extends StatelessWidget {
                   const SizedBox(height: AppTheme.xs),
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.location_pin,
                         color: AppTheme.primary,
                         size: 16,
@@ -561,7 +561,36 @@ class _ReportCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: AppTheme.lg),
-                  if (report.imageUrl.isNotEmpty) ...[
+                  if (report.imageUrls.isNotEmpty) ...[
+                    Text(
+                      'PHOTOS',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.xs),
+                    ClipRRect(
+                      borderRadius: AppTheme.radiusCard,
+                      child: SizedBox(
+                        height: 200,
+                        width: double.infinity,
+                        child: report.imageUrls.length == 1
+                            ? Image.network(
+                                report.imageUrls.first,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color: context.themeSurfaceVariant,
+                                  child: Icon(
+                                    Icons.image_not_supported_rounded,
+                                    color: Colors.grey,
+                                    size: 36,
+                                  ),
+                                ),
+                              )
+                            : _PremiumImageCarousel(imageUrls: report.imageUrls),
+                      ),
+                    ),
+                  ] else if (report.imageUrl.isNotEmpty) ...[
                     Text(
                       'PHOTO',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -579,10 +608,10 @@ class _ReportCard extends StatelessWidget {
                         errorBuilder: (_, __, ___) => Container(
                           width: double.infinity,
                           height: 200,
-                          color: AppTheme.surfaceVariant,
-                          child: const Icon(
+                          color: context.themeSurfaceVariant,
+                          child: Icon(
                             Icons.image_not_supported_rounded,
-                            color: AppTheme.onSurfaceDim,
+                            color: Colors.grey,
                             size: 36,
                           ),
                         ),
@@ -654,7 +683,7 @@ class PinnedAnnouncement extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.push_pin_rounded,
                 color: AppTheme.warning,
                 size: 16,
@@ -671,13 +700,13 @@ class PinnedAnnouncement extends StatelessWidget {
               const Spacer(),
               if (vm.isAdmin)
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.pin_drop_outlined,
-                    color: AppTheme.onSurfaceDim,
+                    color: context.themeOnSurfaceDim,
                     size: 16,
                   ),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
+                  constraints: BoxConstraints(),
                   onPressed: () => vm.togglePinPost(post),
                   tooltip: 'Unpin broadcast',
                 ),
@@ -823,7 +852,7 @@ class ForumMessageBubble extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(AppTheme.md),
         decoration: BoxDecoration(
-          color: isMe ? AppTheme.primary : AppTheme.surfaceVariant,
+          color: isMe ? AppTheme.primary : context.themeSurfaceVariant,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -835,7 +864,7 @@ class ForumMessageBubble extends StatelessWidget {
                   color: AppTheme.warning.withValues(alpha: 0.6),
                   width: 1.5,
                 )
-              : (isMe ? null : Border.all(color: AppTheme.divider)),
+              : (isMe ? null : Border.all(color: context.themeDivider)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -864,7 +893,7 @@ class ForumMessageBubble extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (post.isPinned)
-                      const Icon(
+                      Icon(
                         Icons.push_pin_rounded,
                         color: AppTheme.warning,
                         size: 12,
@@ -879,7 +908,7 @@ class ForumMessageBubble extends StatelessWidget {
                               : Icons.push_pin_outlined,
                           color: post.isPinned
                               ? AppTheme.warning
-                              : AppTheme.onSurfaceDim,
+                              : context.themeOnSurfaceDim,
                           size: 14,
                         ),
                       ),
@@ -892,7 +921,7 @@ class ForumMessageBubble extends StatelessWidget {
             Text(
               post.content,
               style: TextStyle(
-                color: isMe ? AppTheme.onPrimary : AppTheme.onSurface,
+                color: isMe ? AppTheme.onPrimary : context.themeOnSurface,
                 fontSize: 14,
               ),
             ),
@@ -904,7 +933,7 @@ class ForumMessageBubble extends StatelessWidget {
                 style: TextStyle(
                   color: isMe
                       ? AppTheme.onPrimary.withValues(alpha: 0.7)
-                      : AppTheme.onSurfaceDim,
+                      : context.themeOnSurfaceDim,
                   fontSize: 10,
                 ),
               ),
@@ -929,7 +958,7 @@ class _ForumInputArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppTheme.surface,
+      color: context.themeSurface,
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.md,
         vertical: AppTheme.sm,
@@ -943,7 +972,7 @@ class _ForumInputArea extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     controller: controller,
-                    style: const TextStyle(color: AppTheme.onSurface),
+                    style: TextStyle(color: context.themeOnSurface),
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.send,
                     onSubmitted: (val) {
@@ -955,10 +984,10 @@ class _ForumInputArea extends StatelessWidget {
                       hintText: vm.isAnonymousChat
                           ? 'Share anonymously...'
                           : 'Share an update or discuss Accra issues...',
-                      hintStyle: const TextStyle(
-                        color: AppTheme.onSurfaceMuted,
+                      hintStyle: TextStyle(
+                        color: context.themeOnSurfaceMuted,
                       ),
-                      fillColor: AppTheme.background,
+                      fillColor: context.themeBackground,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: AppTheme.radiusCard,
@@ -973,7 +1002,7 @@ class _ForumInputArea extends StatelessWidget {
                 ),
                 const SizedBox(width: AppTheme.sm),
                 IconButton(
-                  icon: const Icon(Icons.send_rounded, color: AppTheme.primary),
+                  icon: Icon(Icons.send_rounded, color: AppTheme.primary),
                   onPressed: () {
                     if (controller.text.trim().isNotEmpty) {
                       onSend();
@@ -992,7 +1021,7 @@ class _ForumInputArea extends StatelessWidget {
                   size: 14,
                   color: vm.isAnonymousChat
                       ? Colors.amber[300]
-                      : AppTheme.onSurfaceDim,
+                      : context.themeOnSurfaceDim,
                 ),
                 const SizedBox(width: 4),
                 Text(
@@ -1001,14 +1030,14 @@ class _ForumInputArea extends StatelessWidget {
                     fontSize: 11,
                     color: vm.isAnonymousChat
                         ? Colors.amber[300]
-                        : AppTheme.onSurfaceDim,
+                        : context.themeOnSurfaceDim,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const Spacer(),
-                const Text(
+                Text(
                   'Post Anonymously',
-                  style: TextStyle(fontSize: 11, color: AppTheme.onSurfaceDim),
+                  style: TextStyle(fontSize: 11, color: context.themeOnSurfaceDim),
                 ),
                 const SizedBox(width: 6),
                 SizedBox(
@@ -1041,7 +1070,7 @@ class _EmptyForumState extends StatelessWidget {
             Icon(
               Icons.forum_outlined,
               size: 72,
-              color: AppTheme.onSurfaceDim.withValues(alpha: 0.5),
+              color: context.themeOnSurfaceDim.withValues(alpha: 0.5),
             ),
             const SizedBox(height: AppTheme.md),
             Text(
@@ -1204,7 +1233,7 @@ class _ProfileSheetState extends State<_ProfileSheet> {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: AppTheme.primary.withValues(alpha: 0.15),
-                child: const Icon(
+                child: Icon(
                   Icons.person_rounded,
                   color: AppTheme.primary,
                   size: 28,
@@ -1245,9 +1274,9 @@ class _ProfileSheetState extends State<_ProfileSheet> {
             style: TextStyle(color: theme.colorScheme.onSurface),
             decoration: InputDecoration(
               hintText: 'Enter your nickname...',
-              prefixIcon: const Icon(Icons.badge_outlined, size: 18),
+              prefixIcon: Icon(Icons.badge_outlined, size: 18),
               suffixIcon: IconButton(
-                icon: const Icon(Icons.check_rounded, color: AppTheme.success),
+                icon: Icon(Icons.check_rounded, color: AppTheme.success),
                 onPressed: () {
                   widget.vm.setNickname(_nicknameController.text);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -1418,7 +1447,7 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                       Chip(
                         label: Text(
                           'Patch $_currentPatch',
-                          style: const TextStyle(fontSize: 10),
+                          style: TextStyle(fontSize: 10),
                         ),
                         padding: EdgeInsets.zero,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -1443,7 +1472,7 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Icon(Icons.refresh_rounded, size: 16),
+                              : Icon(Icons.refresh_rounded, size: 16),
                           label: const Text('Check for Updates'),
                         ),
                       if (_isUpdateAvailable)
@@ -1464,7 +1493,7 @@ class _ProfileSheetState extends State<_ProfileSheet> {
                                     color: AppTheme.onPrimary,
                                   ),
                                 )
-                              : const Icon(Icons.download_rounded, size: 16),
+                              : Icon(Icons.download_rounded, size: 16),
                           label: const Text('Download & Apply Update'),
                         ),
                     ],
@@ -1476,6 +1505,93 @@ class _ProfileSheetState extends State<_ProfileSheet> {
           const SizedBox(height: AppTheme.lg),
         ],
       ),
+    );
+  }
+}
+
+class _PremiumImageCarousel extends StatefulWidget {
+  const _PremiumImageCarousel({required this.imageUrls});
+  final List<String> imageUrls;
+
+  @override
+  State<_PremiumImageCarousel> createState() => _PremiumImageCarouselState();
+}
+
+class _PremiumImageCarouselState extends State<_PremiumImageCarousel> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        PageView.builder(
+          itemCount: widget.imageUrls.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return Image.network(
+              widget.imageUrls[index],
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: context.themeSurfaceVariant,
+                child: Icon(
+                  Icons.image_not_supported_rounded,
+                  color: Colors.grey,
+                  size: 36,
+                ),
+              ),
+            );
+          },
+        ),
+        // Page overlay indicator
+        Positioned(
+          bottom: 8,
+          right: 8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black54,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              '${_currentIndex + 1}/${widget.imageUrls.length}',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        // Dots indicator
+        Positioned(
+          bottom: 12,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              widget.imageUrls.length,
+              (index) => Container(
+                width: 6,
+                height: 6,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _currentIndex == index
+                      ? Colors.white
+                      : Colors.white.withValues(alpha: 0.4),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

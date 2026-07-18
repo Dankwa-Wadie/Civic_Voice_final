@@ -74,11 +74,14 @@ class ReportSubmissionViewModel extends ChangeNotifier {
   double get latitude => _latitude;
   double get longitude => _longitude;
 
-  XFile? _imageFile;
-  XFile? get imageFile => _imageFile;
-  String get imageUrl => _imageFile != null
-      ? _imageFile!.path
+  final List<XFile> _imageFiles = [];
+  List<XFile> get imageFiles => _imageFiles;
+  
+  String get imageUrl => _imageFiles.isNotEmpty
+      ? _imageFiles.first.path
       : 'https://picsum.photos/seed/cv_new/400/300';
+
+  List<String> get imageUrls => _imageFiles.map((f) => f.path).toList();
 
   bool _isFetchingLocation = false;
   bool get isFetchingLocation => _isFetchingLocation;
@@ -141,7 +144,7 @@ class ReportSubmissionViewModel extends ChangeNotifier {
         imageQuality: 85,
       );
       if (file != null) {
-        _imageFile = file;
+        _imageFiles.add(file);
         notifyListeners();
       }
     } catch (_) {
@@ -151,21 +154,27 @@ class ReportSubmissionViewModel extends ChangeNotifier {
 
   Future<void> pickImageFromGallery() async {
     try {
-      final file = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
+      final files = await _imagePicker.pickMultiImage(
         maxWidth: 1080,
         maxHeight: 1080,
         imageQuality: 85,
       );
-      if (file != null) {
-        _imageFile = file;
+      if (files.isNotEmpty) {
+        _imageFiles.addAll(files);
         notifyListeners();
       }
     } catch (_) {}
   }
 
+  void removeImage(int index) {
+    if (index >= 0 && index < _imageFiles.length) {
+      _imageFiles.removeAt(index);
+      notifyListeners();
+    }
+  }
+
   void clearImage() {
-    _imageFile = null;
+    _imageFiles.clear();
     notifyListeners();
   }
 
@@ -231,20 +240,36 @@ class ReportSubmissionViewModel extends ChangeNotifier {
 
     try {
       final reportId = _uuid.v4();
-      String finalImageUrl = imageUrl;
+      final List<String> finalUrls = [];
 
       final hasFirebase = Firebase.apps.isNotEmpty;
-      if (hasFirebase && _imageFile != null) {
-        final bytes = await _imageFile!.readAsBytes();
-        final storagePath = 'incident_media/$reportId.jpg';
-        final storageRef = FirebaseStorage.instance.ref().child(storagePath);
-        
-        final uploadTask = storageRef.putData(
-          bytes,
-          SettableMetadata(contentType: 'image/jpeg'),
-        );
-        final snapshot = await uploadTask;
-        finalImageUrl = await snapshot.ref.getDownloadURL();
+      if (hasFirebase && _imageFiles.isNotEmpty) {
+        // Upload all images in parallel
+        final uploadFutures = _imageFiles.asMap().entries.map((entry) async {
+          final idx = entry.key;
+          final file = entry.value;
+          final bytes = await file.readAsBytes();
+          final storagePath = 'incident_media/${reportId}_$idx.jpg';
+          final storageRef = FirebaseStorage.instance.ref().child(storagePath);
+          
+          final uploadTask = storageRef.putData(
+            bytes,
+            SettableMetadata(contentType: 'image/jpeg'),
+          );
+          final snapshot = await uploadTask;
+          return await snapshot.ref.getDownloadURL();
+        });
+        finalUrls.addAll(await Future.wait(uploadFutures));
+      } else {
+        // Fallback default url if no images selected
+        if (_imageFiles.isEmpty) {
+          finalUrls.add('https://picsum.photos/seed/cv_new/400/300');
+        } else {
+          // Mock URLs for each local file path if offline/mock repository
+          for (int i = 0; i < _imageFiles.length; i++) {
+            finalUrls.add(_imageFiles[i].path);
+          }
+        }
       }
 
       final report = IncidentReport(
@@ -254,7 +279,8 @@ class ReportSubmissionViewModel extends ChangeNotifier {
         description: _description,
         latitude: _latitude,
         longitude: _longitude,
-        imageUrl: finalImageUrl,
+        imageUrl: finalUrls.isNotEmpty ? finalUrls.first : '',
+        imageUrls: finalUrls,
         status: IncidentStatus.submitted,
         timestamp: DateTime.now(),
         reporterName: _isAnonymous
@@ -278,7 +304,7 @@ class ReportSubmissionViewModel extends ChangeNotifier {
     _description = '';
     _latitude = 5.6037;
     _longitude = -0.1870;
-    _imageFile = null;
+    _imageFiles.clear();
     _isAnonymous = false;
     _submissionState = SubmissionState.idle;
     _submittedId = '';

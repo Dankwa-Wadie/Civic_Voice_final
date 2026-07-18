@@ -1,7 +1,4 @@
-// lib/data/models/incident_report.dart
-// Immutable domain model representing a civic incident report.
-// Manual equality implementation — no code generation required.
-
+import 'package:flutter/foundation.dart';
 import 'package:civic_voice/domain/enums/incident_category.dart';
 import 'package:civic_voice/domain/enums/incident_status.dart';
 
@@ -17,6 +14,7 @@ class IncidentReport {
     required this.latitude,
     required this.longitude,
     required this.imageUrl,
+    this.imageUrls = const [],
     required this.status,
     required this.timestamp,
     required this.reporterName,
@@ -48,6 +46,9 @@ class IncidentReport {
   /// Publicly accessible image URL (e.g., Firebase Storage / Picsum seed URL).
   final String imageUrl;
 
+  /// Publicly accessible list of image URLs for multiple photo uploads.
+  final List<String> imageUrls;
+
   /// Current lifecycle status of the incident.
   final IncidentStatus status;
 
@@ -73,6 +74,7 @@ class IncidentReport {
     double? latitude,
     double? longitude,
     String? imageUrl,
+    List<String>? imageUrls,
     IncidentStatus? status,
     DateTime? timestamp,
     String? reporterName,
@@ -86,6 +88,7 @@ class IncidentReport {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       imageUrl: imageUrl ?? this.imageUrl,
+      imageUrls: imageUrls ?? this.imageUrls,
       status: status ?? this.status,
       timestamp: timestamp ?? this.timestamp,
       reporterName: reporterName ?? this.reporterName,
@@ -110,6 +113,7 @@ class IncidentReport {
       'latitude': latitude,
       'longitude': longitude,
       'imageUrl': imageUrl,
+      'imageUrls': imageUrls,
       'status': status.firestoreValue,
       'timestamp': timestamp.millisecondsSinceEpoch,
       'reporterName': reporterName,
@@ -135,6 +139,10 @@ class IncidentReport {
       parsedTimestamp = DateTime.now();
     }
 
+    final String singleUrl = map['imageUrl'] as String? ?? '';
+    final List<String> urls = (map['imageUrls'] as List?)?.map((e) => e as String).toList() ??
+        (singleUrl.isNotEmpty ? [singleUrl] : []);
+
     return IncidentReport(
       id: map['id'] as String? ?? '',
       category: IncidentCategory.fromFirestoreValue(
@@ -143,7 +151,8 @@ class IncidentReport {
       description: map['description'] as String? ?? '',
       latitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (map['longitude'] as num?)?.toDouble() ?? 0.0,
-      imageUrl: map['imageUrl'] as String? ?? '',
+      imageUrl: singleUrl,
+      imageUrls: urls,
       status: IncidentStatus.fromFirestoreValue(
           map['status'] as String? ?? 'submitted'),
       timestamp: parsedTimestamp,
@@ -167,6 +176,7 @@ class IncidentReport {
         latitude == other.latitude &&
         longitude == other.longitude &&
         imageUrl == other.imageUrl &&
+        listEquals(imageUrls, other.imageUrls) &&
         status == other.status &&
         timestamp == other.timestamp &&
         reporterName == other.reporterName &&
@@ -182,6 +192,7 @@ class IncidentReport {
         latitude,
         longitude,
         imageUrl,
+        Object.hashAll(imageUrls),
         status,
         timestamp,
         reporterName,

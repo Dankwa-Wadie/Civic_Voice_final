@@ -55,7 +55,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                   Text(
                     '${reports.length} report${reports.length == 1 ? '' : 's'}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppTheme.onSurfaceMuted,
+                      color: context.themeOnSurfaceMuted,
                     ),
                   ),
                   if (vm.hasActiveFilters) ...[
@@ -110,7 +110,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                             dataRowHeight: 60,
                             dividerThickness: 0.5,
                             headingRowColor: WidgetStatePropertyAll(
-                              AppTheme.surfaceVariant,
+                              context.themeSurfaceVariant,
                             ),
                             dataRowColor: WidgetStateProperty.resolveWith((
                               states,
@@ -121,7 +121,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                               return Colors.transparent;
                             }),
                             border: TableBorder.all(
-                              color: AppTheme.divider,
+                              color: context.themeDivider,
                               borderRadius: AppTheme.radiusCard,
                             ),
                             sortColumnIndex: vm.sortColumnIndex,
@@ -191,13 +191,13 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
 
         return Card(
           margin: const EdgeInsets.only(bottom: AppTheme.md),
-          color: AppTheme.surface,
+          color: context.themeSurface,
           child: ExpansionTile(
             key: PageStorageKey<String>(report.id),
             leading: Container(
               padding: const EdgeInsets.all(AppTheme.sm),
               decoration: BoxDecoration(
-                color: AppTheme.surfaceVariant,
+                color: context.themeSurfaceVariant,
                 borderRadius: AppTheme.radiusButton,
               ),
               child: Text(
@@ -214,7 +214,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppTheme.onSurface,
+                color: context.themeOnSurface,
               ),
             ),
             subtitle: Padding(
@@ -237,7 +237,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                 'DESCRIPTION',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppTheme.onSurfaceDim,
+                  color: context.themeOnSurfaceDim,
                   letterSpacing: 0.8,
                 ),
               ),
@@ -246,10 +246,10 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                 report.description,
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: AppTheme.onSurface),
+                ).textTheme.bodyLarge?.copyWith(color: context.themeOnSurface),
               ),
               const SizedBox(height: AppTheme.md),
-              const Divider(height: 1),
+              Divider(height: 1),
               const SizedBox(height: AppTheme.md),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -290,9 +290,9 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                               horizontal: AppTheme.sm,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.surfaceVariant,
+                              color: context.themeSurfaceVariant,
                               borderRadius: AppTheme.radiusButton,
-                              border: Border.all(color: AppTheme.divider),
+                              border: Border.all(color: context.themeDivider),
                             ),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton<IncidentStatus>(
@@ -305,7 +305,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                dropdownColor: AppTheme.surfaceElevated,
+                                dropdownColor: context.themeSurfaceElevated,
                                 items: nextStatuses.map((s) {
                                   return DropdownMenuItem(
                                     value: s,
@@ -364,7 +364,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
           '$label: ',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppTheme.onSurfaceMuted,
+            color: context.themeOnSurfaceMuted,
           ),
         ),
         Expanded(
@@ -372,7 +372,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
             value,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.onSurface),
+            ).textTheme.bodySmall?.copyWith(color: context.themeOnSurface),
           ),
         ),
       ],
@@ -389,8 +389,8 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
       onSort: onSort,
       label: Text(
         label,
-        style: const TextStyle(
-          color: AppTheme.onSurfaceMuted,
+        style: TextStyle(
+          color: context.themeOnSurfaceMuted,
           fontSize: 12,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.4,
@@ -466,7 +466,7 @@ class _ReportsTableTabState extends State<ReportsTableTab> {
                     ),
                   ),
                   underline: const SizedBox.shrink(),
-                  dropdownColor: AppTheme.surfaceElevated,
+                  dropdownColor: context.themeSurfaceElevated,
                   items: nextStatuses.map((s) {
                     return DropdownMenuItem(
                       value: s,
@@ -517,9 +517,9 @@ class _FilterBarState extends State<_FilterBar> {
     final isMobile = MediaQuery.of(context).size.width < 700;
     return Container(
       padding: const EdgeInsets.all(AppTheme.md),
-      decoration: const BoxDecoration(
-        color: AppTheme.surface,
-        border: Border(bottom: BorderSide(color: AppTheme.divider)),
+      decoration: BoxDecoration(
+        color: context.themeSurface,
+        border: Border(bottom: BorderSide(color: context.themeDivider)),
       ),
       child: Wrap(
         spacing: AppTheme.sm,
@@ -532,15 +532,15 @@ class _FilterBarState extends State<_FilterBar> {
             height: 48,
             child: TextField(
               controller: _searchCtrl,
-              style: const TextStyle(color: AppTheme.onSurface, fontSize: 13),
+              style: TextStyle(color: context.themeOnSurface, fontSize: 13),
               decoration: InputDecoration(
                 hintText: 'Search reports…',
-                prefixIcon: const Icon(Icons.search_rounded, size: 18),
+                prefixIcon: Icon(Icons.search_rounded, size: 18),
                 contentPadding: EdgeInsets.zero,
                 isDense: true,
                 suffixIcon: _searchCtrl.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear_rounded, size: 16),
+                        icon: Icon(Icons.clear_rounded, size: 16),
                         onPressed: () {
                           _searchCtrl.clear();
                           vm.setSearchQuery('');
@@ -596,7 +596,7 @@ class _FilterBarState extends State<_FilterBar> {
                 vm.clearFilters();
                 widget.onFilterChanged();
               },
-              icon: const Icon(Icons.filter_alt_off_rounded, size: 16),
+              icon: Icon(Icons.filter_alt_off_rounded, size: 16),
               label: const Text('Clear', style: TextStyle(fontSize: 13)),
             ),
         ],
@@ -628,10 +628,10 @@ class _DropdownFilter<T> extends StatelessWidget {
       decoration: BoxDecoration(
         color: value != null
             ? AppTheme.primary.withValues(alpha: 0.1)
-            : AppTheme.surfaceVariant,
+            : context.themeSurfaceVariant,
         borderRadius: AppTheme.radiusButton,
         border: Border.all(
-          color: value != null ? AppTheme.primary : AppTheme.divider,
+          color: value != null ? AppTheme.primary : context.themeDivider,
         ),
       ),
       child: DropdownButtonHideUnderline(
@@ -639,29 +639,29 @@ class _DropdownFilter<T> extends StatelessWidget {
           value: value,
           hint: Text(
             label,
-            style: const TextStyle(
-              color: AppTheme.onSurfaceMuted,
+            style: TextStyle(
+              color: context.themeOnSurfaceMuted,
               fontSize: 13,
             ),
           ),
-          dropdownColor: AppTheme.surfaceElevated,
-          style: const TextStyle(color: AppTheme.onSurface, fontSize: 13),
-          icon: const Icon(
+          dropdownColor: context.themeSurfaceElevated,
+          style: TextStyle(color: context.themeOnSurface, fontSize: 13),
+          icon: Icon(
             Icons.keyboard_arrow_down_rounded,
-            color: AppTheme.onSurfaceDim,
+            color: context.themeOnSurfaceDim,
             size: 18,
           ),
           items: [
             DropdownMenuItem<T?>(
               value: null,
-              child: Text('All $label', style: const TextStyle(fontSize: 13)),
+              child: Text('All $label', style: TextStyle(fontSize: 13)),
             ),
             ...items.map(
               (item) => DropdownMenuItem<T?>(
                 value: item,
                 child: Text(
                   itemLabel(item),
-                  style: const TextStyle(fontSize: 13),
+                  style: TextStyle(fontSize: 13),
                 ),
               ),
             ),
@@ -698,8 +698,8 @@ class _PaginationBar extends StatelessWidget {
         horizontal: AppTheme.lg,
         vertical: AppTheme.sm,
       ),
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: AppTheme.divider)),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: context.themeDivider)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -711,14 +711,14 @@ class _PaginationBar extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.chevron_left_rounded),
+                icon: Icon(Icons.chevron_left_rounded),
                 onPressed: currentPage > 0
                     ? () => onPageChanged(currentPage - 1)
                     : null,
                 iconSize: 20,
-                color: AppTheme.onSurfaceMuted,
-                disabledColor: AppTheme.onSurfaceDim,
-                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                color: context.themeOnSurfaceMuted,
+                disabledColor: context.themeOnSurfaceDim,
+                constraints: BoxConstraints(minWidth: 40, minHeight: 40),
                 padding: EdgeInsets.zero,
               ),
               Padding(
@@ -727,19 +727,19 @@ class _PaginationBar extends StatelessWidget {
                   '${currentPage + 1} of $totalPages',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.onSurface,
+                    color: context.themeOnSurface,
                   ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.chevron_right_rounded),
+                icon: Icon(Icons.chevron_right_rounded),
                 onPressed: currentPage < totalPages - 1
                     ? () => onPageChanged(currentPage + 1)
                     : null,
                 iconSize: 20,
-                color: AppTheme.onSurfaceMuted,
-                disabledColor: AppTheme.onSurfaceDim,
-                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                color: context.themeOnSurfaceMuted,
+                disabledColor: context.themeOnSurfaceDim,
+                constraints: BoxConstraints(minWidth: 40, minHeight: 40),
                 padding: EdgeInsets.zero,
               ),
             ],
@@ -764,7 +764,7 @@ class _EmptyTableState extends StatelessWidget {
           Icon(
             hasFilters ? Icons.filter_alt_off_outlined : Icons.inbox_outlined,
             size: 48,
-            color: AppTheme.onSurfaceDim,
+            color: context.themeOnSurfaceDim,
           ),
           const SizedBox(height: AppTheme.md),
           Text(

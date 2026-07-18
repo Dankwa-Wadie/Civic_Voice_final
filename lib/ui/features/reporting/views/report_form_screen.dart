@@ -20,11 +20,11 @@ class ReportFormScreen extends StatelessWidget {
     return Consumer<ReportSubmissionViewModel>(
       builder: (context, vm, _) {
         return Scaffold(
-          backgroundColor: AppTheme.background,
+          backgroundColor: context.themeBackground,
           appBar: AppBar(
             title: Text('Report Incident — Step ${vm.currentStep + 1} of ${vm.totalSteps}'),
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded),
+              icon: Icon(Icons.arrow_back_rounded),
               onPressed: () {
                 if (vm.canGoBack) {
                   vm.previousStep();
@@ -41,7 +41,7 @@ class ReportFormScreen extends StatelessWidget {
                 // ── Progress bar ────────────────────────────────────────────
                 LinearProgressIndicator(
                   value: (vm.currentStep + 1) / vm.totalSteps,
-                  backgroundColor: AppTheme.divider,
+                  backgroundColor: context.themeDivider,
                   valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
                   minHeight: 3,
                 ),
@@ -115,12 +115,12 @@ class _Step1Category extends StatelessWidget {
                     return Card(
                       margin: EdgeInsets.zero,
                       color: isSelected
-                          ? color.withOpacity(0.15)
-                          : AppTheme.surface,
+                          ? color.withValues(alpha: 0.15)
+                          : context.themeSurface,
                       shape: RoundedRectangleBorder(
                         borderRadius: AppTheme.radiusCard,
                         side: BorderSide(
-                          color: isSelected ? color : AppTheme.divider,
+                          color: isSelected ? color : context.themeDivider,
                           width: isSelected ? 2 : 1,
                         ),
                       ),
@@ -132,7 +132,7 @@ class _Step1Category extends StatelessWidget {
                           children: [
                             Text(
                               cat.emoji,
-                              style: const TextStyle(fontSize: 32),
+                              style: TextStyle(fontSize: 32),
                             ),
                             const SizedBox(height: AppTheme.sm),
                             Text(
@@ -262,7 +262,7 @@ class _Step2DetailsState extends State<_Step2Details> {
                   controller: _titleCtrl,
                   onChanged: vm.setTitle,
                   maxLength: 80,
-                  style: const TextStyle(color: AppTheme.onSurface),
+                  style: TextStyle(color: context.themeOnSurface),
                   decoration: const InputDecoration(
                     labelText: 'Short title *',
                     hintText: 'e.g. Large pothole on Spintex Road',
@@ -278,7 +278,7 @@ class _Step2DetailsState extends State<_Step2Details> {
                   onChanged: vm.setDescription,
                   maxLines: 5,
                   maxLength: 500,
-                  style: const TextStyle(color: AppTheme.onSurface),
+                  style: TextStyle(color: context.themeOnSurface),
                   decoration: const InputDecoration(
                     labelText: 'Detailed description *',
                     hintText:
@@ -412,13 +412,13 @@ class _Step3LocationState extends State<_Step3Location> {
                 // District search
                 TextField(
                   controller: _searchCtrl,
-                  style: const TextStyle(color: AppTheme.onSurface),
+                  style: TextStyle(color: context.themeOnSurface),
                   decoration: InputDecoration(
                     hintText: 'Type district to search (e.g. Osu Klottey)',
-                    prefixIcon: const Icon(Icons.search_rounded, size: 18),
+                    prefixIcon: Icon(Icons.search_rounded, size: 18),
                     suffixIcon: _searchCtrl.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear_rounded, size: 18),
+                            icon: Icon(Icons.clear_rounded, size: 18),
                             onPressed: () => setState(() {
                               _searchCtrl.clear();
                               _matchingDistricts = [];
@@ -441,11 +441,11 @@ class _Step3LocationState extends State<_Step3Location> {
                 if (_matchingDistricts.isNotEmpty) ...[
                   const SizedBox(height: AppTheme.xs),
                   Container(
-                    constraints: const BoxConstraints(maxHeight: 150),
+                    constraints: BoxConstraints(maxHeight: 150),
                     decoration: BoxDecoration(
-                      color: AppTheme.surfaceVariant,
+                      color: context.themeSurfaceVariant,
                       borderRadius: AppTheme.radiusCard,
-                      border: Border.all(color: AppTheme.divider),
+                      border: Border.all(color: context.themeDivider),
                     ),
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -455,7 +455,7 @@ class _Step3LocationState extends State<_Step3Location> {
                         return ListTile(
                           dense: true,
                           title: Text(dist,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontWeight: FontWeight.w600)),
                           onTap: () {
                             final center =
@@ -479,7 +479,7 @@ class _Step3LocationState extends State<_Step3Location> {
                   height: 250,
                   decoration: BoxDecoration(
                     borderRadius: AppTheme.radiusCard,
-                    border: Border.all(color: AppTheme.divider),
+                    border: Border.all(color: context.themeDivider),
                   ),
                   child: ClipRRect(
                     borderRadius: AppTheme.radiusCard,
@@ -503,7 +503,7 @@ class _Step3LocationState extends State<_Step3Location> {
                               point: currentLatLng,
                               width: 50,
                               height: 50,
-                              child: const Icon(
+                              child: Icon(
                                 Icons.location_pin,
                                 color: Colors.red,
                                 size: 40,
@@ -529,7 +529,7 @@ class _Step3LocationState extends State<_Step3Location> {
                                 '${vm.longitude.toStringAsFixed(4)}° '
                                 '${vm.longitude < 0 ? 'W' : 'E'}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppTheme.onSurfaceMuted,
+                              color: context.themeOnSurfaceMuted,
                               fontWeight: FontWeight.bold,
                             ),
                       ),
@@ -538,7 +538,7 @@ class _Step3LocationState extends State<_Step3Location> {
                       onPressed: vm.isFetchingLocation
                           ? null
                           : () => vm.setLocationChosen(false),
-                      icon: const Icon(Icons.swap_horiz_rounded, size: 14),
+                      icon: Icon(Icons.swap_horiz_rounded, size: 14),
                       label:
                           const Text('Change', style: TextStyle(fontSize: 12)),
                     ),
@@ -546,21 +546,23 @@ class _Step3LocationState extends State<_Step3Location> {
                 ),
               ],
 
-              const Divider(height: AppTheme.xl),
+              Divider(height: AppTheme.xl),
 
               // ── Photo section ───────────────────────────────────────────────
               Text(
-                'Attach Photo (Optional)',
+                'Attach Photos (Optional)',
                 style: Theme.of(context)
                     .textTheme
                     .titleLarge
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: AppTheme.sm),
-              vm.imageFile != null
-                  ? _ImagePreview(
-                      filePath: vm.imageFile!.path,
-                      onRemove: vm.clearImage,
+              vm.imageFiles.isNotEmpty
+                  ? _MultiImagePreview(
+                      filePaths: vm.imageFiles.map((f) => f.path).toList(),
+                      onRemove: vm.removeImage,
+                      onAddCamera: kIsWeb ? null : vm.pickImageFromCamera,
+                      onAddGallery: vm.pickImageFromGallery,
                     )
                   : _PhotoPickerButtons(
                       onCamera: kIsWeb ? null : vm.pickImageFromCamera,
@@ -602,9 +604,9 @@ class _Step3LocationState extends State<_Step3Location> {
       Container(
         padding: const EdgeInsets.all(AppTheme.md),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: context.themeSurface,
           borderRadius: AppTheme.radiusCard,
-          border: Border.all(color: AppTheme.divider),
+          border: Border.all(color: context.themeDivider),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -614,10 +616,10 @@ class _Step3LocationState extends State<_Step3Location> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppTheme.primary.withOpacity(0.12),
+                    color: AppTheme.primary.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.location_on_rounded,
                     color: AppTheme.primary,
                     size: 20,
@@ -691,16 +693,16 @@ class _LocationOptionTile extends StatelessWidget {
           vertical: AppTheme.sm,
         ),
         decoration: BoxDecoration(
-          color: AppTheme.surfaceVariant,
+          color: context.themeSurfaceVariant,
           borderRadius: AppTheme.radiusCard,
-          border: Border.all(color: AppTheme.divider),
+          border: Border.all(color: context.themeDivider),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.12),
+                color: iconColor.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: iconColor, size: 22),
@@ -714,22 +716,22 @@ class _LocationOptionTile extends StatelessWidget {
                     title,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: AppTheme.onSurface,
+                          color: context.themeOnSurface,
                         ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.onSurfaceMuted,
+                          color: context.themeOnSurfaceMuted,
                         ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right_rounded,
-              color: AppTheme.onSurfaceMuted,
+              color: context.themeOnSurfaceMuted,
               size: 20,
             ),
           ],
@@ -739,48 +741,139 @@ class _LocationOptionTile extends StatelessWidget {
   }
 }
 
-class _ImagePreview extends StatelessWidget {
-  const _ImagePreview({required this.filePath, required this.onRemove});
-  final String filePath;
-  final VoidCallback onRemove;
+class _MultiImagePreview extends StatelessWidget {
+  const _MultiImagePreview({
+    required this.filePaths,
+    required this.onRemove,
+    this.onAddCamera,
+    required this.onAddGallery,
+  });
+
+  final List<String> filePaths;
+  final Function(int) onRemove;
+  final VoidCallback? onAddCamera;
+  final VoidCallback onAddGallery;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: AppTheme.radiusCard,
-          child: kIsWeb
-              ? Image.network(
-                  filePath,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                )
-              : Image.file(
-                  File(filePath),
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+    return SizedBox(
+      height: 110,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: filePaths.length + 1,
+        itemBuilder: (context, index) {
+          if (index == filePaths.length) {
+            // "Add more" button
+            return InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: context.themeSurface,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  ),
+                  builder: (ctx) => SafeArea(
+                    child: Wrap(
+                      children: [
+                        if (onAddCamera != null)
+                          ListTile(
+                            leading: Icon(Icons.camera_alt_rounded, color: context.themeOnSurface),
+                            title: Text('Take Photo', style: TextStyle(color: context.themeOnSurface)),
+                            onTap: () {
+                              Navigator.pop(ctx);
+                              onAddCamera!();
+                            },
+                          ),
+                        ListTile(
+                          leading: Icon(Icons.photo_library_rounded, color: context.themeOnSurface),
+                          title: Text('Choose from Gallery', style: TextStyle(color: context.themeOnSurface)),
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            onAddGallery();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                width: 100,
+                height: 100,
+                margin: const EdgeInsets.only(right: AppTheme.sm),
+                decoration: BoxDecoration(
+                  color: context.themeSurfaceVariant,
+                  borderRadius: AppTheme.radiusCard,
+                  border: Border.all(color: context.themeDivider),
                 ),
-        ),
-        Positioned(
-          top: AppTheme.xs,
-          right: AppTheme.xs,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.black54,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              onPressed: onRemove,
-              icon: const Icon(Icons.close_rounded, color: Colors.white, size: 18),
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-              padding: EdgeInsets.zero,
-            ),
-          ),
-        ),
-      ],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add_photo_alternate_rounded, size: 28, color: context.themeOnSurfaceDim),
+                    const SizedBox(height: AppTheme.xs),
+                    Text(
+                      'Add Photo',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: context.themeOnSurfaceDim,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          final path = filePaths[index];
+          return Stack(
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                margin: const EdgeInsets.only(right: AppTheme.sm),
+                decoration: BoxDecoration(
+                  borderRadius: AppTheme.radiusCard,
+                  border: Border.all(color: context.themeDivider),
+                ),
+                child: ClipRRect(
+                  borderRadius: AppTheme.radiusCard,
+                  child: kIsWeb
+                      ? Image.network(
+                          path,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(path),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
+              Positioned(
+                top: 2,
+                right: 12,
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: const BoxDecoration(
+                    color: Colors.black54,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: () => onRemove(index),
+                    icon: Icon(Icons.close_rounded, color: Colors.white, size: 12),
+                    constraints: BoxConstraints(minWidth: 24, minHeight: 24),
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -798,7 +891,7 @@ class _PhotoPickerButtons extends StatelessWidget {
           Expanded(
             child: OutlinedButton.icon(
               onPressed: onCamera,
-              icon: const Icon(Icons.camera_alt_outlined, size: 18),
+              icon: Icon(Icons.camera_alt_outlined, size: 18),
               label: const Text('Camera'),
             ),
           ),
@@ -807,7 +900,7 @@ class _PhotoPickerButtons extends StatelessWidget {
         Expanded(
           child: OutlinedButton.icon(
             onPressed: onGallery,
-            icon: const Icon(Icons.photo_library_outlined, size: 18),
+            icon: Icon(Icons.photo_library_outlined, size: 18),
             label: const Text('Gallery'),
           ),
         ),
@@ -865,12 +958,12 @@ class _Step4ReviewState extends State<_Step4Review> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
+                Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Submission failed: ${_vm.errorMessage}',
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    style: TextStyle(color: Colors.white, fontSize: 13),
                   ),
                 ),
               ],
@@ -927,8 +1020,8 @@ class _Step4ReviewState extends State<_Step4Review> {
               ),
               const SizedBox(height: AppTheme.sm),
               _ReviewCard(
-                label: 'Photo',
-                value: vm.imageFile != null ? 'Attached ✓' : 'None (optional)',
+                label: 'Photos',
+                value: vm.imageFiles.isNotEmpty ? '${vm.imageFiles.length} photo(s) attached ✓' : 'None (optional)',
               ),
               const SizedBox(height: AppTheme.sm),
               Container(
@@ -937,9 +1030,9 @@ class _Step4ReviewState extends State<_Step4Review> {
                   vertical: AppTheme.xs,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceVariant,
+                  color: context.themeSurfaceVariant,
                   borderRadius: AppTheme.radiusCard,
-                  border: Border.all(color: AppTheme.divider),
+                  border: Border.all(color: context.themeDivider),
                 ),
                 child: Row(
                   children: [
@@ -953,10 +1046,10 @@ class _Step4ReviewState extends State<_Step4Review> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Report Anonymously',
                             style: TextStyle(
-                              color: AppTheme.onSurface,
+                              color: context.themeOnSurface,
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
                             ),
@@ -965,8 +1058,8 @@ class _Step4ReviewState extends State<_Step4Review> {
                             vm.isAnonymous
                                 ? 'Your identity is hidden from others'
                                 : 'Your name will show on this report',
-                            style: const TextStyle(
-                              color: AppTheme.onSurfaceDim,
+                            style: TextStyle(
+                              color: context.themeOnSurfaceDim,
                               fontSize: 11,
                             ),
                           ),
@@ -976,8 +1069,8 @@ class _Step4ReviewState extends State<_Step4Review> {
                     Switch(
                       value: vm.isAnonymous,
                       onChanged: vm.setAnonymous,
-                      activeColor: Colors.amber[400],
-                      activeTrackColor: Colors.amber.withOpacity(0.3),
+                      activeThumbColor: Colors.amber[400],
+                      activeTrackColor: Colors.amber.withValues(alpha: 0.3),
                     ),
                   ],
                 ),
@@ -996,7 +1089,7 @@ class _Step4ReviewState extends State<_Step4Review> {
                             strokeWidth: 2.5,
                           ),
                         )
-                      : const Icon(Icons.send_rounded, size: 18),
+                      : Icon(Icons.send_rounded, size: 18),
                   label: Text(
                     vm.isSubmitting ? 'Submitting…' : 'Submit Report',
                   ),
@@ -1020,9 +1113,9 @@ class _ReviewCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppTheme.md),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: context.themeSurface,
         borderRadius: AppTheme.radiusCard,
-        border: Border.all(color: AppTheme.divider),
+        border: Border.all(color: context.themeDivider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1032,7 +1125,7 @@ class _ReviewCard extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               letterSpacing: 0.8,
               fontWeight: FontWeight.w700,
-              color: AppTheme.onSurfaceDim,
+              color: context.themeOnSurfaceDim,
             ),
           ),
           const SizedBox(height: AppTheme.xs),
@@ -1070,7 +1163,7 @@ class _NextButton extends StatelessWidget {
           children: [
             Text(label),
             const SizedBox(width: AppTheme.sm),
-            const Icon(Icons.arrow_forward_rounded, size: 16),
+            Icon(Icons.arrow_forward_rounded, size: 16),
           ],
         ),
       ),

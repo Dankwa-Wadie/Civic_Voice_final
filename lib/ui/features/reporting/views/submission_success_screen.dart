@@ -42,7 +42,7 @@ class _SubmissionSuccessScreenState extends State<SubmissionSuccessScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: context.themeBackground,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -73,7 +73,7 @@ class _SubmissionSuccessScreenState extends State<SubmissionSuccessScreen>
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.check_rounded,
                         color: Colors.white,
                         size: 52,
@@ -101,16 +101,16 @@ class _SubmissionSuccessScreenState extends State<SubmissionSuccessScreen>
                       vertical: AppTheme.sm,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.surface,
+                      color: context.themeSurface,
                       borderRadius: AppTheme.radiusCard,
-                      border: Border.all(color: AppTheme.divider),
+                      border: Border.all(color: context.themeDivider),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.tag_rounded,
-                          color: AppTheme.onSurfaceDim,
+                          color: context.themeOnSurfaceDim,
                           size: 14,
                         ),
                         const SizedBox(width: AppTheme.xs),
@@ -135,14 +135,14 @@ class _SubmissionSuccessScreenState extends State<SubmissionSuccessScreen>
                             r.settings.name == UserDashboardScreen.routeName ||
                             r.isFirst,
                       ),
-                      icon: const Icon(Icons.dashboard_rounded, size: 18),
+                      icon: Icon(Icons.dashboard_rounded, size: 18),
                       label: const Text('Back to Dashboard'),
                     ),
                   ),
                   const SizedBox(height: AppTheme.sm),
                   TextButton.icon(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.add_rounded, size: 16),
+                    icon: Icon(Icons.add_rounded, size: 16),
                     label: const Text('Submit Another Report'),
                     style: TextButton.styleFrom(
                       minimumSize: const Size(double.infinity, 48),
