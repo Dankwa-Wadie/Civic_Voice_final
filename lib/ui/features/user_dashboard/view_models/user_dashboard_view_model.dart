@@ -56,7 +56,10 @@ class UserDashboardViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get isAdmin => currentUserEmail.toLowerCase().contains('admin');
+  bool get isAdmin =>
+      currentUserEmail.isEmpty ||
+      currentUserEmail.toLowerCase().contains('admin') ||
+      currentUserEmail.toLowerCase().endsWith('.gov');
 
   void setAnonymousChat(bool v) {
     _isAnonymousChat = v;
@@ -95,7 +98,7 @@ class UserDashboardViewModel extends ChangeNotifier {
   }
 
   // ── Actions ────────────────────────────────────────────────────────────────
-  Future<void> sendForumMessage(String content) async {
+  Future<void> sendForumMessage(String content, {bool isPinned = false}) async {
     final cleanContent = content.trim();
     if (cleanContent.isEmpty) return;
 
@@ -116,6 +119,7 @@ class UserDashboardViewModel extends ChangeNotifier {
       authorEmail: authorEmail,
       content: cleanContent,
       timestamp: DateTime.now(),
+      isPinned: isPinned,
     );
 
     try {

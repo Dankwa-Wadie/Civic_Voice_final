@@ -138,8 +138,8 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
             vm: vm,
             messageController: _messageController,
             scrollController: _scrollController,
-            onSend: () {
-              vm.sendForumMessage(_messageController.text);
+            onSend: (bool isPinned) {
+              vm.sendForumMessage(_messageController.text, isPinned: isPinned);
               _messageController.clear();
               _scrollToBottom();
             },
@@ -628,72 +628,145 @@ class _StatusBadge extends StatelessWidget {
 }
 
 class PinnedAnnouncement extends StatelessWidget {
-  const PinnedAnnouncement({super.key, required this.post, required this.vm});
+  const PinnedAnnouncement({
+    super.key,
+    required this.post,
+    required this.vm,
+    this.isAdminOverride = false,
+  });
+
   final ForumPost post;
   final UserDashboardViewModel vm;
+  final bool isAdminOverride;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final effectiveIsAdmin = vm.isAdmin || isAdminOverride;
+
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: AppTheme.md,
-        vertical: AppTheme.sm,
+        vertical: AppTheme.xs + 2,
       ),
       padding: const EdgeInsets.all(AppTheme.md),
       decoration: BoxDecoration(
         color: AppTheme.warning.withValues(alpha: 0.12),
         borderRadius: AppTheme.radiusCard,
         border: Border.all(
-          color: AppTheme.warning.withValues(alpha: 0.3),
-          width: 1,
+          color: AppTheme.warning.withValues(alpha: 0.5),
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.warning.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.push_pin_rounded,
-                color: AppTheme.warning,
-                size: 16,
-              ),
-              const SizedBox(width: AppTheme.xs),
-              Text(
-                'PINNED ANNOUNCEMENT',
-                style: theme.textTheme.bodySmall?.copyWith(
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppTheme.warning.withValues(alpha: 0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.push_pin_rounded,
                   color: AppTheme.warning,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+                  size: 16,
                 ),
               ),
-              const Spacer(),
-              if (vm.isAdmin)
-                IconButton(
-                  icon: const Icon(
-                    Icons.pin_drop_outlined,
-                    color: AppTheme.onSurfaceDim,
-                    size: 16,
+              const SizedBox(width: AppTheme.xs),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'PINNED ANNOUNCEMENT',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppTheme.warning,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.8,
+                        fontSize: 11,
+                      ),
+                    ),
+                    Text(
+                      'Featured broadcast for all citizens',
+                      style: TextStyle(
+                        color: AppTheme.onSurfaceDim,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (effectiveIsAdmin)
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.warning,
+                    side: BorderSide(
+                      color: AppTheme.warning.withValues(alpha: 0.6),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: () => vm.togglePinPost(post),
-                  tooltip: 'Unpin broadcast',
+                  icon: const Icon(Icons.push_pin_outlined, size: 14),
+                  label: const Text(
+                    'Unpin',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () async {
+                    await vm.togglePinPost(post);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('📌 Announcement unpinned.'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
                 ),
             ],
           ),
-          const SizedBox(height: AppTheme.xs),
+          const SizedBox(height: AppTheme.sm),
           Text(
             post.content,
             style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
+              height: 1.3,
             ),
           ),
           const SizedBox(height: AppTheme.xs),
-          Text(
-            'by ${post.authorName}',
-            style: theme.textTheme.bodySmall?.copyWith(fontSize: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Posted by ${post.authorName}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: 11,
+                  color: AppTheme.onSurfaceDim,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              Text(
+                DateFormat('MMM d, hh:mm a').format(post.timestamp),
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppTheme.onSurfaceDim,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -709,12 +782,14 @@ class ForumTab extends StatelessWidget {
     required this.messageController,
     required this.scrollController,
     required this.onSend,
+    this.isAdminOverride = false,
   });
 
   final UserDashboardViewModel vm;
   final TextEditingController messageController;
   final ScrollController scrollController;
-  final VoidCallback onSend;
+  final void Function(bool isPinned) onSend;
+  final bool isAdminOverride;
 
   @override
   Widget build(BuildContext context) {
@@ -726,11 +801,56 @@ class ForumTab extends StatelessWidget {
 
     final posts = vm.forumPosts; // Index 0 is newest
     final pinnedPosts = posts.where((p) => p.isPinned).toList();
+    final effectiveIsAdmin = vm.isAdmin || isAdminOverride;
 
     return Column(
       children: [
+        if (effectiveIsAdmin)
+          Container(
+            margin: const EdgeInsets.fromLTRB(
+              AppTheme.md,
+              AppTheme.xs,
+              AppTheme.md,
+              0,
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.sm + 2,
+              vertical: AppTheme.xs + 2,
+            ),
+            decoration: BoxDecoration(
+              color: AppTheme.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: AppTheme.primary.withValues(alpha: 0.25),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.push_pin_rounded,
+                  color: AppTheme.primary,
+                  size: 16,
+                ),
+                const SizedBox(width: AppTheme.xs),
+                Expanded(
+                  child: Text(
+                    'Admin Mode: Tap "📌 Pin to Top" on any message bubble below to highlight it as an announcement for all citizens.',
+                    style: TextStyle(
+                      color: AppTheme.primaryLight,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         if (pinnedPosts.isNotEmpty)
-          PinnedAnnouncement(post: pinnedPosts.first, vm: vm),
+          PinnedAnnouncement(
+            post: pinnedPosts.first,
+            vm: vm,
+            isAdminOverride: isAdminOverride,
+          ),
         Expanded(
           child: posts.isEmpty
               ? _EmptyForumState()
@@ -742,11 +862,21 @@ class ForumTab extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final post = posts[index];
                     final isMe = post.authorId == vm.currentUserId;
-                    return ForumMessageBubble(post: post, isMe: isMe, vm: vm);
+                    return ForumMessageBubble(
+                      post: post,
+                      isMe: isMe,
+                      vm: vm,
+                      isAdminOverride: isAdminOverride,
+                    );
                   },
                 ),
         ),
-        _ForumInputArea(vm: vm, controller: messageController, onSend: onSend),
+        _ForumInputArea(
+          vm: vm,
+          controller: messageController,
+          onSend: onSend,
+          isAdminOverride: isAdminOverride,
+        ),
       ],
     );
   }
@@ -758,10 +888,13 @@ class ForumMessageBubble extends StatelessWidget {
     required this.post,
     required this.isMe,
     required this.vm,
+    this.isAdminOverride = false,
   });
+
   final ForumPost post;
   final bool isMe;
   final UserDashboardViewModel vm;
+  final bool isAdminOverride;
 
   Widget _buildRoleBadge(String email, String name) {
     final bool isAnonAdmin =
@@ -813,13 +946,14 @@ class ForumMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formattedTime = DateFormat('hh:mm a').format(post.timestamp);
+    final effectiveIsAdmin = vm.isAdmin || isAdminOverride;
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: AppTheme.xs),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
+          maxWidth: MediaQuery.of(context).size.width * 0.82,
         ),
         padding: const EdgeInsets.all(AppTheme.md),
         decoration: BoxDecoration(
@@ -832,8 +966,8 @@ class ForumMessageBubble extends StatelessWidget {
           ),
           border: post.isPinned
               ? Border.all(
-                  color: AppTheme.warning.withValues(alpha: 0.6),
-                  width: 1.5,
+                  color: AppTheme.warning.withValues(alpha: 0.8),
+                  width: 2,
                 )
               : (isMe ? null : Border.all(color: AppTheme.divider)),
         ),
@@ -843,47 +977,108 @@ class ForumMessageBubble extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      isMe ? 'You (${post.authorName})' : post.authorName,
-                      style: TextStyle(
-                        color: isMe
-                            ? AppTheme.onPrimary.withValues(alpha: 0.9)
-                            : AppTheme.primaryLight,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 11,
-                      ),
-                    ),
-                    const SizedBox(width: AppTheme.xs),
-                    _buildRoleBadge(post.authorEmail, post.authorName),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (post.isPinned)
-                      const Icon(
-                        Icons.push_pin_rounded,
-                        color: AppTheme.warning,
-                        size: 12,
-                      ),
-                    if (vm.isAdmin) ...[
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: () => vm.togglePinPost(post),
-                        child: Icon(
-                          post.isPinned
-                              ? Icons.pin_drop_rounded
-                              : Icons.push_pin_outlined,
-                          color: post.isPinned
-                              ? AppTheme.warning
-                              : AppTheme.onSurfaceDim,
-                          size: 14,
+                Expanded(
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: AppTheme.xs,
+                    children: [
+                      Text(
+                        isMe ? 'You (${post.authorName})' : post.authorName,
+                        style: TextStyle(
+                          color: isMe
+                              ? AppTheme.onPrimary.withValues(alpha: 0.95)
+                              : AppTheme.primaryLight,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
                         ),
                       ),
+                      _buildRoleBadge(post.authorEmail, post.authorName),
+                      if (post.isPinned)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 1.5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.warning.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(
+                              color: AppTheme.warning.withValues(alpha: 0.5),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.push_pin_rounded,
+                                color: AppTheme.warning,
+                                size: 10,
+                              ),
+                              SizedBox(width: 2),
+                              Text(
+                                'PINNED',
+                                style: TextStyle(
+                                  color: AppTheme.warning,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: Icon(
+                    Icons.more_vert_rounded,
+                    size: 16,
+                    color: isMe
+                        ? AppTheme.onPrimary.withValues(alpha: 0.7)
+                        : AppTheme.onSurfaceDim,
+                  ),
+                  onSelected: (val) async {
+                    if (val == 'toggle_pin') {
+                      await vm.togglePinPost(post);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              post.isPinned
+                                  ? '📌 Announcement unpinned.'
+                                  : '📌 Post pinned as announcement!',
+                            ),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    if (effectiveIsAdmin)
+                      PopupMenuItem(
+                        value: 'toggle_pin',
+                        child: Row(
+                          children: [
+                            Icon(
+                              post.isPinned
+                                  ? Icons.pin_drop_rounded
+                                  : Icons.push_pin_outlined,
+                              size: 16,
+                              color: AppTheme.warning,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              post.isPinned
+                                  ? 'Unpin Announcement'
+                                  : 'Pin to Top as Announcement',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ],
@@ -896,18 +1091,91 @@ class ForumMessageBubble extends StatelessWidget {
                 fontSize: 14,
               ),
             ),
-            const SizedBox(height: AppTheme.xs),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Text(
-                formattedTime,
-                style: TextStyle(
-                  color: isMe
-                      ? AppTheme.onPrimary.withValues(alpha: 0.7)
-                      : AppTheme.onSurfaceDim,
-                  fontSize: 10,
+            const SizedBox(height: AppTheme.xs + 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (effectiveIsAdmin)
+                  InkWell(
+                    onTap: () async {
+                      await vm.togglePinPost(post);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              post.isPinned
+                                  ? '📌 Announcement unpinned.'
+                                  : '📌 Post pinned as announcement!',
+                            ),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(4),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: post.isPinned
+                            ? AppTheme.warning.withValues(alpha: 0.2)
+                            : (isMe
+                                ? Colors.white.withValues(alpha: 0.15)
+                                : AppTheme.primary.withValues(alpha: 0.1)),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: post.isPinned
+                              ? AppTheme.warning.withValues(alpha: 0.5)
+                              : (isMe
+                                  ? Colors.white.withValues(alpha: 0.3)
+                                  : AppTheme.primary.withValues(alpha: 0.3)),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            post.isPinned
+                                ? Icons.push_pin_rounded
+                                : Icons.push_pin_outlined,
+                            size: 12,
+                            color: post.isPinned
+                                ? AppTheme.warning
+                                : (isMe
+                                    ? Colors.white
+                                    : AppTheme.primaryLight),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            post.isPinned ? 'Pinned (Unpin)' : '📌 Pin to Top',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: post.isPinned
+                                  ? AppTheme.warning
+                                  : (isMe
+                                      ? Colors.white
+                                      : AppTheme.primaryLight),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  const SizedBox.shrink(),
+                Text(
+                  formattedTime,
+                  style: TextStyle(
+                    color: isMe
+                        ? AppTheme.onPrimary.withValues(alpha: 0.7)
+                        : AppTheme.onSurfaceDim,
+                    fontSize: 10,
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
@@ -916,18 +1184,39 @@ class ForumMessageBubble extends StatelessWidget {
   }
 }
 
-class _ForumInputArea extends StatelessWidget {
+class _ForumInputArea extends StatefulWidget {
   const _ForumInputArea({
     required this.vm,
     required this.controller,
     required this.onSend,
+    this.isAdminOverride = false,
   });
+
   final UserDashboardViewModel vm;
   final TextEditingController controller;
-  final VoidCallback onSend;
+  final void Function(bool isPinned) onSend;
+  final bool isAdminOverride;
+
+  @override
+  State<_ForumInputArea> createState() => _ForumInputAreaState();
+}
+
+class _ForumInputAreaState extends State<_ForumInputArea> {
+  bool _pinAsAnnouncement = false;
+
+  void _handleSend() {
+    if (widget.controller.text.trim().isNotEmpty) {
+      widget.onSend(_pinAsAnnouncement);
+      if (_pinAsAnnouncement) {
+        setState(() => _pinAsAnnouncement = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final effectiveIsAdmin = widget.vm.isAdmin || widget.isAdminOverride;
+
     return Container(
       color: AppTheme.surface,
       padding: const EdgeInsets.symmetric(
@@ -938,23 +1227,96 @@ class _ForumInputArea extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (effectiveIsAdmin)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _pinAsAnnouncement = !_pinAsAnnouncement;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _pinAsAnnouncement
+                              ? AppTheme.warning.withValues(alpha: 0.2)
+                              : AppTheme.background,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: _pinAsAnnouncement
+                                ? AppTheme.warning
+                                : AppTheme.divider,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.push_pin_rounded,
+                              size: 14,
+                              color: _pinAsAnnouncement
+                                  ? AppTheme.warning
+                                  : AppTheme.onSurfaceDim,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Pin as Announcement',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: _pinAsAnnouncement
+                                    ? AppTheme.warning
+                                    : AppTheme.onSurfaceDim,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: Checkbox(
+                                value: _pinAsAnnouncement,
+                                onChanged: (v) {
+                                  setState(() {
+                                    _pinAsAnnouncement = v ?? false;
+                                  });
+                                },
+                                activeColor: AppTheme.warning,
+                                checkColor: Colors.black,
+                                side: const BorderSide(
+                                  color: AppTheme.onSurfaceDim,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             Row(
               children: [
                 Expanded(
                   child: TextField(
-                    controller: controller,
+                    controller: widget.controller,
                     style: const TextStyle(color: AppTheme.onSurface),
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.send,
-                    onSubmitted: (val) {
-                      if (val.trim().isNotEmpty) {
-                        onSend();
-                      }
-                    },
+                    onSubmitted: (val) => _handleSend(),
                     decoration: InputDecoration(
-                      hintText: vm.isAnonymousChat
+                      hintText: widget.vm.isAnonymousChat
                           ? 'Share anonymously...'
-                          : 'Share an update or discuss Accra issues...',
+                          : (_pinAsAnnouncement
+                              ? 'Write an announcement to pin...'
+                              : 'Share an update or discuss Accra issues...'),
                       hintStyle: const TextStyle(
                         color: AppTheme.onSurfaceMuted,
                       ),
@@ -973,12 +1335,18 @@ class _ForumInputArea extends StatelessWidget {
                 ),
                 const SizedBox(width: AppTheme.sm),
                 IconButton(
-                  icon: const Icon(Icons.send_rounded, color: AppTheme.primary),
-                  onPressed: () {
-                    if (controller.text.trim().isNotEmpty) {
-                      onSend();
-                    }
-                  },
+                  icon: Icon(
+                    _pinAsAnnouncement
+                        ? Icons.push_pin_rounded
+                        : Icons.send_rounded,
+                    color: _pinAsAnnouncement
+                        ? AppTheme.warning
+                        : AppTheme.primary,
+                  ),
+                  onPressed: _handleSend,
+                  tooltip: _pinAsAnnouncement
+                      ? 'Send & Pin Announcement'
+                      : 'Send Message',
                 ),
               ],
             ),
@@ -986,20 +1354,20 @@ class _ForumInputArea extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  vm.isAnonymousChat
+                  widget.vm.isAnonymousChat
                       ? Icons.visibility_off_rounded
                       : Icons.visibility_rounded,
                   size: 14,
-                  color: vm.isAnonymousChat
+                  color: widget.vm.isAnonymousChat
                       ? Colors.amber[300]
                       : AppTheme.onSurfaceDim,
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  vm.isAnonymousChat ? 'Anonymous Mode' : 'Post publicly',
+                  widget.vm.isAnonymousChat ? 'Anonymous Mode' : 'Post publicly',
                   style: TextStyle(
                     fontSize: 11,
-                    color: vm.isAnonymousChat
+                    color: widget.vm.isAnonymousChat
                         ? Colors.amber[300]
                         : AppTheme.onSurfaceDim,
                     fontWeight: FontWeight.w600,
@@ -1014,8 +1382,8 @@ class _ForumInputArea extends StatelessWidget {
                 SizedBox(
                   height: 28,
                   child: Switch(
-                    value: vm.isAnonymousChat,
-                    onChanged: vm.setAnonymousChat,
+                    value: widget.vm.isAnonymousChat,
+                    onChanged: widget.vm.setAnonymousChat,
                     activeThumbColor: Colors.amber[400],
                     activeTrackColor: Colors.amber.withValues(alpha: 0.3),
                   ),

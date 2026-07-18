@@ -267,10 +267,11 @@ class _AdminForumTabState extends State<_AdminForumTab> {
       builder: (context, vm, _) {
         return ForumTab(
           vm: vm,
+          isAdminOverride: true,
           messageController: _messageController,
           scrollController: _scrollController,
-          onSend: () {
-            vm.sendForumMessage(_messageController.text);
+          onSend: (bool isPinned) {
+            vm.sendForumMessage(_messageController.text, isPinned: isPinned);
             _messageController.clear();
             _scrollToBottom();
           },
