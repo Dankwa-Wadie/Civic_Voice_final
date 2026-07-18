@@ -185,14 +185,44 @@ class _Step2DetailsState extends State<_Step2Details> {
   @override
   void initState() {
     super.initState();
-    _titleCtrl.text = 'Large pothole on Spintex Road';
-    _descCtrl.text =
-        'There is a massive pothole in the middle of the road near the traffic light, causing drivers to swerve dangerously.';
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final vm = Provider.of<ReportSubmissionViewModel>(context, listen: false);
-        vm.setTitle(_titleCtrl.text);
-        vm.setDescription(_descCtrl.text);
+        
+        // Define category-based sample titles & descriptions
+        String sampleTitle = 'Pothole on main highway';
+        String sampleDesc = 'There is a large pothole in the middle of the road near the intersection, causing hazardous driving conditions.';
+
+        final category = vm.selectedCategory;
+        if (category != null) {
+          switch (category.firestoreValue) {
+            case 'road':
+              sampleTitle = 'Blocked road / major pothole';
+              sampleDesc = 'A large pothole has formed in the center lane of the road. Vehicles are swerving to avoid it, creating unsafe traffic conditions.';
+              break;
+            case 'waste':
+              sampleTitle = 'Uncollected garbage accumulation';
+              sampleDesc = 'A heap of public waste has piled up near the street corner. It is blocking the sidewalk and starting to emit a foul odor.';
+              break;
+            case 'utility':
+              sampleTitle = 'Water main leak / pipe burst';
+              sampleDesc = 'Clean water is gushing out from a broken underground pipe onto the sidewalk, causing localized flooding and low pressure.';
+              break;
+            case 'safety':
+              sampleTitle = 'Broken streetlights at intersection';
+              sampleDesc = 'Several streetlights at the intersection are completely dark, causing very poor visibility for pedestrians and drivers at night.';
+              break;
+            case 'other':
+              sampleTitle = 'Public property damage / issue';
+              sampleDesc = 'Damage observed to public facilities that requires inspection or repair by community responders.';
+              break;
+          }
+        }
+
+        _titleCtrl.text = sampleTitle;
+        _descCtrl.text = sampleDesc;
+        vm.setTitle(sampleTitle);
+        vm.setDescription(sampleDesc);
       }
     });
   }
@@ -295,215 +325,236 @@ class _Step3LocationState extends State<_Step3Location> {
   final MapController _mapController = MapController();
   final TextEditingController _searchCtrl = TextEditingController();
   List<String> _matchingDistricts = [];
-  late ReportSubmissionViewModel _vm;
 
-  // Accra center fallback
+  // Accra centre — used as the default initial map position.
   static const LatLng _accraCentre = LatLng(5.6037, -0.1870);
 
   @override
-  void initState() {
-    super.initState();
-    _vm = context.read<ReportSubmissionViewModel>();
-    _vm.addListener(_onViewModelChanged);
-    if (!_vm.isFetchingLocation) {
-      _vm.fetchMockLocation();
-    }
-  }
-
-  @override
   void dispose() {
-    _vm.removeListener(_onViewModelChanged);
     _searchCtrl.dispose();
     super.dispose();
   }
 
-  void _onViewModelChanged() {
+  // ── Location method callbacks ───────────────────────────────────────────────
+
+  Future<void> _useLiveLocation() async {
+    final vm = context.read<ReportSubmissionViewModel>();
+    vm.setLocationChosen(true);
+
+    await vm.fetchLocation();
+
+    // After GPS resolves, pan the map to the new position.
     if (mounted) {
-      _mapController.move(
-        LatLng(_vm.latitude, _vm.longitude),
-        _mapController.camera.zoom,
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          try {
+            _mapController.move(
+              LatLng(vm.latitude, vm.longitude),
+              14.0,
+            );
+          } catch (_) {
+            // Map not ready yet — ignore; initialCenter already uses vm coords.
+          }
+        }
+      });
     }
   }
 
+  void _pinOnMap() {
+    context.read<ReportSubmissionViewModel>().setLocationChosen(true);
+  }
+
+  // ── District lookup helpers ─────────────────────────────────────────────────
+
   Map<String, LatLng> _getDistrictCenters() {
-    final Map<String, List<LatLng>> grouped = {};
-    for (final report in MockCivicDataRepository.seedData) {
-      grouped.putIfAbsent(report.district, () => []).add(LatLng(report.latitude, report.longitude));
+    final grouped = <String, List<LatLng>>{};
+    for (final r in MockCivicDataRepository.seedData) {
+      grouped.putIfAbsent(r.district, () => []).add(LatLng(r.latitude, r.longitude));
     }
-    return grouped.map((district, points) {
-      final avgLat = points.map((p) => p.latitude).reduce((a, b) => a + b) / points.length;
-      final avgLng = points.map((p) => p.longitude).reduce((a, b) => a + b) / points.length;
-      return MapEntry(district, LatLng(avgLat, avgLng));
+    return grouped.map((district, pts) {
+      final lat = pts.map((p) => p.latitude).reduce((a, b) => a + b) / pts.length;
+      final lng = pts.map((p) => p.longitude).reduce((a, b) => a + b) / pts.length;
+      return MapEntry(district, LatLng(lat, lng));
     });
   }
+
+  // ── Build ───────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     final districtCenters = _getDistrictCenters();
-    final uniqueDistricts = MockCivicDataRepository.seedData.map((r) => r.district).toSet().toList();
+    final uniqueDistricts =
+        MockCivicDataRepository.seedData.map((r) => r.district).toSet().toList();
 
     return Consumer<ReportSubmissionViewModel>(
       builder: (context, vm, _) {
+        final currentLatLng = LatLng(vm.latitude, vm.longitude);
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(AppTheme.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Location & Photo',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
+              Text('Location & Photo',
+                  style: Theme.of(context).textTheme.headlineLarge),
               const SizedBox(height: AppTheme.xs),
               Text(
-                'Confirm your GPS location, search a district, or tap the map to choose the exact incident location.',
+                'Choose how you want to provide the incident location.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: AppTheme.md),
-              
-              // ── Search/Type in District ─────────────────────────────────────
-              TextField(
-                controller: _searchCtrl,
-                style: const TextStyle(color: AppTheme.onSurface),
-                decoration: InputDecoration(
-                  hintText: 'Type district to search (e.g. Osu Klottey)',
-                  prefixIcon: const Icon(Icons.search_rounded, size: 18),
-                  suffixIcon: _searchCtrl.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear_rounded, size: 18),
-                          onPressed: () {
-                            setState(() {
+
+              // ── Step A: Pick method ─────────────────────────────────────────
+              if (!vm.locationChosen) ..._buildLocationChoiceCard(context, vm),
+
+              // ── Step B: Map + search (shown after method chosen) ────────────
+              if (vm.locationChosen) ...[
+                // District search
+                TextField(
+                  controller: _searchCtrl,
+                  style: const TextStyle(color: AppTheme.onSurface),
+                  decoration: InputDecoration(
+                    hintText: 'Type district to search (e.g. Osu Klottey)',
+                    prefixIcon: const Icon(Icons.search_rounded, size: 18),
+                    suffixIcon: _searchCtrl.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear_rounded, size: 18),
+                            onPressed: () => setState(() {
                               _searchCtrl.clear();
+                              _matchingDistricts = [];
+                            }),
+                          )
+                        : null,
+                  ),
+                  onChanged: (val) {
+                    setState(() {
+                      _matchingDistricts = val.trim().isEmpty
+                          ? []
+                          : uniqueDistricts
+                              .where((d) => d
+                                  .toLowerCase()
+                                  .contains(val.trim().toLowerCase()))
+                              .toList();
+                    });
+                  },
+                ),
+                if (_matchingDistricts.isNotEmpty) ...[
+                  const SizedBox(height: AppTheme.xs),
+                  Container(
+                    constraints: const BoxConstraints(maxHeight: 150),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceVariant,
+                      borderRadius: AppTheme.radiusCard,
+                      border: Border.all(color: AppTheme.divider),
+                    ),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _matchingDistricts.length,
+                      itemBuilder: (ctx, i) {
+                        final dist = _matchingDistricts[i];
+                        return ListTile(
+                          dense: true,
+                          title: Text(dist,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w600)),
+                          onTap: () {
+                            final center =
+                                districtCenters[dist] ?? _accraCentre;
+                            vm.setLocation(
+                                center.latitude, center.longitude);
+                            setState(() {
+                              _searchCtrl.text = dist;
                               _matchingDistricts = [];
                             });
                           },
-                        )
-                      : null,
-                ),
-                onChanged: (val) {
-                  if (val.trim().isEmpty) {
-                    setState(() => _matchingDistricts = []);
-                    return;
-                  }
-                  setState(() {
-                    _matchingDistricts = uniqueDistricts
-                        .where((d) => d.toLowerCase().contains(val.trim().toLowerCase()))
-                        .toList();
-                  });
-                },
-              ),
-              if (_matchingDistricts.isNotEmpty) ...[
-                const SizedBox(height: AppTheme.xs),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppTheme.md),
+
+                // Interactive map
                 Container(
-                  constraints: const BoxConstraints(maxHeight: 150),
+                  height: 250,
                   decoration: BoxDecoration(
-                    color: AppTheme.surfaceVariant,
                     borderRadius: AppTheme.radiusCard,
                     border: Border.all(color: AppTheme.divider),
                   ),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: _matchingDistricts.length,
-                    itemBuilder: (context, index) {
-                      final dist = _matchingDistricts[index];
-                      return ListTile(
-                        dense: true,
-                        title: Text(dist, style: const TextStyle(fontWeight: FontWeight.w600)),
-                        onTap: () {
-                          final center = districtCenters[dist] ?? _accraCentre;
-                          vm.setLocation(center.latitude, center.longitude);
-                          setState(() {
-                            _searchCtrl.text = dist;
-                            _matchingDistricts = [];
-                          });
-                        },
-                      );
-                    },
+                  child: ClipRRect(
+                    borderRadius: AppTheme.radiusCard,
+                    child: FlutterMap(
+                      mapController: _mapController,
+                      options: MapOptions(
+                        initialCenter: currentLatLng,
+                        initialZoom: 14.0,
+                        onTap: (_, latLng) =>
+                            vm.setLocation(latLng.latitude, latLng.longitude),
+                      ),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.civicvoice.civic_voice',
+                        ),
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              point: currentLatLng,
+                              width: 50,
+                              height: 50,
+                              child: const Icon(
+                                Icons.location_pin,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
+                ),
+                const SizedBox(height: AppTheme.sm),
+
+                // Coords row + Change button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        vm.isFetchingLocation
+                            ? 'Fetching location…'
+                            : '${vm.latitude.toStringAsFixed(4)}° N, '
+                                '${vm.longitude.toStringAsFixed(4)}° '
+                                '${vm.longitude < 0 ? 'W' : 'E'}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppTheme.onSurfaceMuted,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: vm.isFetchingLocation
+                          ? null
+                          : () => vm.setLocationChosen(false),
+                      icon: const Icon(Icons.swap_horiz_rounded, size: 14),
+                      label:
+                          const Text('Change', style: TextStyle(fontSize: 12)),
+                    ),
+                  ],
                 ),
               ],
-              const SizedBox(height: AppTheme.md),
 
-              // ── Interactive Map ─────────────────────────────────────────────
-              Container(
-                height: 250,
-                decoration: BoxDecoration(
-                  borderRadius: AppTheme.radiusCard,
-                  border: Border.all(color: AppTheme.divider),
-                ),
-                child: ClipRRect(
-                  borderRadius: AppTheme.radiusCard,
-                  child: FlutterMap(
-                    mapController: _mapController,
-                    options: MapOptions(
-                      initialCenter: LatLng(vm.latitude, vm.longitude),
-                      initialZoom: 14.0,
-                      onTap: (_, latLng) {
-                        vm.setLocation(latLng.latitude, latLng.longitude);
-                      },
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'com.civicvoice.civic_voice',
-                      ),
-                      MarkerLayer(
-                        markers: [
-                          Marker(
-                            point: LatLng(vm.latitude, vm.longitude),
-                            width: 50,
-                            height: 50,
-                            child: const Icon(
-                              Icons.location_pin,
-                              color: Colors.red,
-                              size: 40,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppTheme.sm),
-
-              // ── Coords & Use Current Location Row ───────────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      vm.isFetchingLocation
-                          ? 'Fetching location…'
-                          : '${vm.latitude.toStringAsFixed(4)}° N, ${vm.longitude.toStringAsFixed(4)}° ${vm.longitude < 0 ? 'W' : 'E'}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.onSurfaceMuted,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: vm.isFetchingLocation ? null : vm.fetchLocation,
-                    icon: vm.isFetchingLocation
-                        ? const SizedBox(
-                            width: 14,
-                            height: 14,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppTheme.primary,
-                            ),
-                          )
-                        : const Icon(Icons.my_location_rounded, size: 14),
-                    label: const Text('Use Current Location', style: TextStyle(fontSize: 12)),
-                  ),
-                ],
-              ),
               const Divider(height: AppTheme.xl),
 
-              // ── Attach Photo Section ────────────────────────────────────────
+              // ── Photo section ───────────────────────────────────────────────
               Text(
                 'Attach Photo (Optional)',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: AppTheme.sm),
               vm.imageFile != null
@@ -516,16 +567,174 @@ class _Step3LocationState extends State<_Step3Location> {
                       onGallery: vm.pickImageFromGallery,
                     ),
               const SizedBox(height: AppTheme.xl),
-              
-              _NextButton(
-                enabled: !vm.isFetchingLocation,
-                label: 'Review & Submit',
-                onPressed: () => vm.nextStep(),
-              ),
+
+              // ── CTA button ─────────────────────────────────────────────────
+              if (vm.isFetchingLocation)
+                SizedBox(
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    onPressed: null,
+                    icon: const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    ),
+                    label: const Text('Getting your location…'),
+                  ),
+                )
+              else
+                _NextButton(
+                  enabled: vm.step3Valid,
+                  label: 'Review & Submit',
+                  onPressed: () => vm.nextStep(),
+                ),
             ],
           ),
         );
       },
+    );
+  }
+
+  /// Builds the two-option card shown before the user picks a location method.
+  List<Widget> _buildLocationChoiceCard(BuildContext context, ReportSubmissionViewModel vm) {
+    return [
+      Container(
+        padding: const EdgeInsets.all(AppTheme.md),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: AppTheme.radiusCard,
+          border: Border.all(color: AppTheme.divider),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primary.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.location_on_rounded,
+                    color: AppTheme.primary,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: AppTheme.sm),
+                Expanded(
+                  child: Text(
+                    'How would you like to set the location?',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppTheme.md),
+
+            // Option 1 — Live GPS
+            _LocationOptionTile(
+              icon: Icons.my_location_rounded,
+              iconColor: AppTheme.primary,
+              title: 'Use My Live Location',
+              subtitle: 'Automatically detect where you are right now',
+              onTap: _useLiveLocation,
+            ),
+
+            const SizedBox(height: AppTheme.sm),
+
+            // Option 2 — Pin on Map
+            _LocationOptionTile(
+              icon: Icons.map_outlined,
+              iconColor: Colors.teal,
+              title: 'Select on Map',
+              subtitle: 'Tap the map to pin the exact incident location',
+              onTap: _pinOnMap,
+            ),
+          ],
+        ),
+      ),
+      const SizedBox(height: AppTheme.md),
+    ];
+  }
+}
+
+// ── Location Option Tile ──────────────────────────────────────────────────────
+
+class _LocationOptionTile extends StatelessWidget {
+  const _LocationOptionTile({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: AppTheme.radiusCard,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.md,
+          vertical: AppTheme.sm,
+        ),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceVariant,
+          borderRadius: AppTheme.radiusCard,
+          border: Border.all(color: AppTheme.divider),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 22),
+            ),
+            const SizedBox(width: AppTheme.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.onSurface,
+                        ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.onSurfaceMuted,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppTheme.onSurfaceMuted,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -609,24 +818,87 @@ class _PhotoPickerButtons extends StatelessWidget {
 
 // ── STEP 4: Review & Submit ───────────────────────────────────────────────────
 
-class _Step4Review extends StatelessWidget {
+class _Step4Review extends StatefulWidget {
   const _Step4Review({super.key});
+
+  @override
+  State<_Step4Review> createState() => _Step4ReviewState();
+}
+
+class _Step4ReviewState extends State<_Step4Review> {
+  late ReportSubmissionViewModel _vm;
+
+  @override
+  void initState() {
+    super.initState();
+    _vm = context.read<ReportSubmissionViewModel>();
+    _vm.addListener(_onVmChanged);
+  }
+
+  @override
+  void dispose() {
+    _vm.removeListener(_onVmChanged);
+    super.dispose();
+  }
+
+  void _onVmChanged() {
+    if (!mounted) return;
+
+    // Navigate to success screen as soon as submission completes
+    if (_vm.isSuccess) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => SubmissionSuccessScreen(reportId: _vm.submittedId),
+          ),
+        );
+      });
+    }
+
+    // Surface errors in a floating SnackBar so the user ALWAYS sees them,
+    // regardless of scroll position. Include a Retry action.
+    if (_vm.hasError && _vm.errorMessage.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Submission failed: ${_vm.errorMessage}',
+                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppTheme.error,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 6),
+            action: SnackBarAction(
+              label: 'Retry',
+              textColor: Colors.white,
+              onPressed: _handleSubmit,
+            ),
+          ),
+        );
+      });
+    }
+  }
+
+  Future<void> _handleSubmit() async {
+    // Clear any previous error so the button becomes active again
+    _vm.clearError();
+    await _vm.submit();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ReportSubmissionViewModel>(
       builder: (context, vm, _) {
-        if (vm.isSuccess) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => SubmissionSuccessScreen(
-                  reportId: vm.submittedId,
-                ),
-              ),
-            );
-          });
-        }
         return SingleChildScrollView(
           padding: const EdgeInsets.all(AppTheme.lg),
           child: Column(
@@ -710,28 +982,11 @@ class _Step4Review extends StatelessWidget {
                   ],
                 ),
               ),
-              if (vm.errorMessage.isNotEmpty) ...[
-                const SizedBox(height: AppTheme.md),
-                Container(
-                  padding: const EdgeInsets.all(AppTheme.sm),
-                  decoration: BoxDecoration(
-                    color: AppTheme.error.withOpacity(0.10),
-                    borderRadius: AppTheme.radiusButton,
-                    border: Border.all(
-                      color: AppTheme.error.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Text(
-                    vm.errorMessage,
-                    style: const TextStyle(color: AppTheme.error, fontSize: 13),
-                  ),
-                ),
-              ],
               const SizedBox(height: AppTheme.xl),
               SizedBox(
                 height: 48,
                 child: ElevatedButton.icon(
-                  onPressed: vm.isSubmitting ? null : vm.submit,
+                  onPressed: vm.isSubmitting ? null : _handleSubmit,
                   icon: vm.isSubmitting
                       ? const SizedBox(
                           width: 18,

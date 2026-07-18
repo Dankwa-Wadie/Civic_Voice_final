@@ -169,7 +169,15 @@ class ReportSubmissionViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get step3Valid => true; // Location auto-fetched; photo optional
+  bool _locationChosen = false;
+  bool get locationChosen => _locationChosen;
+
+  void setLocationChosen(bool value) {
+    _locationChosen = value;
+    notifyListeners();
+  }
+
+  bool get step3Valid => _locationChosen && !_isFetchingLocation;
 
   // ── Step 4: Review & Submit ────────────────────────────────────────────────
   SubmissionState _submissionState = SubmissionState.idle;
@@ -180,6 +188,15 @@ class ReportSubmissionViewModel extends ChangeNotifier {
   String get errorMessage => _errorMessage;
   bool get isSubmitting => _submissionState == SubmissionState.loading;
   bool get isSuccess => _submissionState == SubmissionState.success;
+  bool get hasError => _submissionState == SubmissionState.error;
+
+  void clearError() {
+    if (_submissionState == SubmissionState.error) {
+      _submissionState = SubmissionState.idle;
+      _errorMessage = '';
+      notifyListeners();
+    }
+  }
 
   // ── Navigation ─────────────────────────────────────────────────────────────
   bool nextStep() {
@@ -266,6 +283,6 @@ class ReportSubmissionViewModel extends ChangeNotifier {
     _submissionState = SubmissionState.idle;
     _submittedId = '';
     _errorMessage = '';
-    notifyListeners();
+    _locationChosen = false; // Reset chosen location too
   }
 }
